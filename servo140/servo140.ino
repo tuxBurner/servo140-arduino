@@ -7,9 +7,9 @@ const int steeringThreashold = 10;
 /**
 * Car 1 vars
 */
-const int steer1Pin = 5; // which pin to read for steer car1
-const int throttle1Pin = 6; // which pin to read to controll throttle car1
-const int steer1LedPin = 7;
+const int steer1Pin = 2; // which pin to read for steer car1
+const int throttle1Pin = 4; // which pin to read to controll throttle car1
+const int steer1LedPin = 13;
 const int thrust1LedPin = 9;
 unsigned long steer1Value; // the current value of throttle 1
 unsigned long throttle1Value; // the current value of throttle 1
