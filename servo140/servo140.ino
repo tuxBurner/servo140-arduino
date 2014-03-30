@@ -1,9 +1,8 @@
 #include <Servo.h>
 
-const float throttleScaling = .15;
-const float steerScaling = .15;
-const int steeringThreashold = 10;
-const int thrustThreashold = 20;
+const int rSteeringThreashold = 250;
+const int lSteeringThreashold = rSteeringThreashold * -1;
+const int thrustThreashold = 45;
 
 // start light pins
 const int datapin = 12; 
@@ -11,10 +10,10 @@ const int clockpin = 6;
 const int latchpin = 10;
 // data of the start light
 byte startLightData = 0;
-boolean lightOkay = false;
+boolean lightOkay = true;
 
 // flag if the power is on or not
-boolean powerOn = false;
+boolean powerOn = true;
 
 /**
 * Car 1 vars
@@ -81,24 +80,14 @@ void loop()
   */
   steer1Value = pulseIn (steer1Pin, HIGH, 20000);
   steer1 = (steer1Value - initialSteer1);
-  steer1 = steer1 * steerScaling;
-  steer1 = constrain (steer1, -100, 100); 
+  steer1 = constrain (steer1, -600, 600); 
   // check if to steer left or right
-  if(steer1 > steeringThreashold) {
+  if(steer1 > rSteeringThreashold) {
     right1 = true;
   }
-  if(steer1 < steeringThreashold * -1) {
+  if(steer1 < lSteeringThreashold) {
     right1 = false;
   }
-  /*Serial.print ("Initial Steer: ");
-  Serial.print (initialSteer1);
-  Serial.print (" Channel 1: ");
-  Serial.print (steer1Value);
-  Serial.print(" Steer: ");
-  Serial.print (steer1);
-  Serial.print (" Right: ");
-  Serial.print (right1);
-  Serial.println("");*/
 
   /**
   * Read car1 throttle value
@@ -107,28 +96,31 @@ void loop()
   thrust1 = throttle1Value - initialThrottle1;
   
   // reset if break is hit for debug
-  if(thrust1 < -100) {
-    lightOkay = false;
-    powerOn = false;  
-  }
+  /*if(thrust1 < -300) {
+    // power of the lane
+    if(powerOn == true && lightOkay == true) {
+      powerOn = false;
+      return;  
+    } 
+    
+    if(powerOn == false && lightOkay == true) {
+      lightOkay = false;
+      return;
+    }
+  }*/
   
   // make sure that the throttle is not flickering
   if(thrust1 > thrustThreashold) {
-    thrust1 = thrust1 * throttleScaling; // convert to 0-100 range-c
-    thrust1 = constrain(thrust1, 0, 100); //just in case
+    thrust1 = constrain(thrust1, 0, 700); //just in case
   } else {
     thrust1 = 0;
   }
- /* Serial.print("Initial Throttle: ");
-  Serial.print (initialThrottle1);
-  Serial.print(" Channel 2: ");
-  Serial.print (throttle1Value);
-  Serial.print(" Thrust: ");
-  Serial.print (thrust1);
-  Serial.println("");*/
-  Serial.print("Thrust: ");
+  
+  /**
+  * write the data to the serial console
+  */
   Serial.print(thrust1);
-  Serial.print(" Steering: ");
+  Serial.print(",");
   Serial.print(right1);
   Serial.println("");
   
@@ -143,7 +135,7 @@ void loop()
   
   
   // spin the motor
-  int val = map(thrust1, 0, 100, 0, 255);
+  int val = map(thrust1, 0, 700, 0, 255);
   analogWrite(thrust1LedPin, val);
   // only start motor if power is on
   if(powerOn == true) {
@@ -152,8 +144,10 @@ void loop()
 }
 
 void startLightSeq() {
+  powerOn = false;
+  
   int index;
-  const int delayTime = 500; // Time (milliseconds) to pause between LEDs
+  const int delayTime = 1000; // Time (milliseconds) to pause between LEDs
                        // Make this smaller for faster switching
 
   // Turn all the LEDs on:
