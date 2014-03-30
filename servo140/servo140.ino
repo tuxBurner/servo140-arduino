@@ -73,7 +73,7 @@ void setup()
 void loop()
 {
   if(lightOkay == false) {
-    oneAfterAnother();
+    startLightSeq();
   }  
   
   /**
@@ -105,6 +105,13 @@ void loop()
   */
   throttle1Value = pulseIn(throttle1Pin, HIGH, 20000); //read RC channel 2
   thrust1 = throttle1Value - initialThrottle1;
+  
+  // reset if break is hit for debug
+  if(thrust1 < -100) {
+    lightOkay = false;
+    powerOn = false;  
+  }
+  
   // make sure that the throttle is not flickering
   if(thrust1 > thrustThreashold) {
     thrust1 = thrust1 * throttleScaling; // convert to 0-100 range-c
@@ -144,7 +151,7 @@ void loop()
   }  
 }
 
-void oneAfterAnother() {
+void startLightSeq() {
   int index;
   const int delayTime = 500; // Time (milliseconds) to pause between LEDs
                        // Make this smaller for faster switching
@@ -173,6 +180,9 @@ void oneAfterAnother() {
     //delay(delayTime);
   }
   lightOkay = true;
+  
+  // turn the power on
+  powerOn = true;
 }
 
 /**
