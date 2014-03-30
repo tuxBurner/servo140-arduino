@@ -130,6 +130,7 @@ void loop()
   Serial.print(right1);
   Serial.println("");
   
+  // mark the steer pos with the led and set it on the motor driver
   if(right1 == true) {
     shiftWrite(steer1ShiftPos, HIGH);
     digitalWrite(motor1DirPin, HIGH);
@@ -162,6 +163,7 @@ void startLightSeq() {
     shiftWrite(index, HIGH);
     delay(delayTime);                
   }
+  
 
   // Turn all the LEDs off:
 
@@ -172,8 +174,11 @@ void startLightSeq() {
   for(index = numOfLights; index >= 0; index--)
   {
     shiftWrite(index, LOW);
-    //delay(delayTime);
   }
+  
+  
+  
+  // light is okay
   lightOkay = true;
   
   // turn the power on
