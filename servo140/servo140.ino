@@ -12,12 +12,11 @@ const int latchpin = 10;
 // data of the start light
 byte startLightData = 0;
 boolean lightOkay = true;
-const int delayTime = 1000;
+const int delayTime = 500;
 const int numOfLights=3;
 
 // flag if the power is on or not
 boolean powerOn = true;
-boolean isReady = true;
 
 /**
 * Car 1 vars
@@ -104,14 +103,13 @@ void loop()
     // power of the lane
     if(powerOn == true) {
       powerOn = false;
-      delay(1000);
+      delay(500);
       return;
     } 
     
-    if(powerOn == false &&  isReady == true) {
-      isReady = false;
+    // start the light sequence
+    if(powerOn == false) {
       lightOkay = false;
-      return;
     }
   }
   
@@ -125,6 +123,8 @@ void loop()
   /**
   * write the data to the serial console
   */
+  Serial.print(powerOn);
+  Serial.print(",");
   Serial.print(thrust1);
   Serial.print(",");
   Serial.print(right1);
@@ -140,9 +140,9 @@ void loop()
   
   // spin the motor
   int val = map(thrust1, 0, 700, 0, 255);
-  analogWrite(thrust1LedPin, val);
   // only start motor if power is on
   if(powerOn == true) {
+    analogWrite(thrust1LedPin, val);
     analogWrite(motor1PwmPin,val);
   }  
 }
@@ -178,7 +178,6 @@ void startLightSeq() {
   
   // turn the power on
   powerOn = true;
-  isReady = true;
 }
 
 /**
