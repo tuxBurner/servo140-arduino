@@ -1,5 +1,6 @@
 #include <Servo.h>
 
+// threashholds
 const int rSteeringThreashold = 250;
 const int lSteeringThreashold = rSteeringThreashold * -1;
 const int thrustThreashold = 45;
@@ -11,9 +12,12 @@ const int latchpin = 10;
 // data of the start light
 byte startLightData = 0;
 boolean lightOkay = true;
+const int delayTime = 1000;
+const int numOfLights=3;
 
 // flag if the power is on or not
 boolean powerOn = true;
+boolean isReady = true;
 
 /**
 * Car 1 vars
@@ -27,7 +31,7 @@ const int motor1DirPin = 12;
 const int motor1PwmPin = 3;
 
 // display led pins
-const int steer1LedPin = 7;
+const int steer1ShiftPos = 4;
 const int thrust1LedPin = 9;
 
 unsigned long steer1Value; // the current value of throttle 1
@@ -60,7 +64,6 @@ void setup()
   // set pin for steer1 and throttle1 to digital read for car1
   pinMode(steer1Pin, INPUT); 
   pinMode(throttle1Pin,INPUT);
-  pinMode(steer1LedPin, OUTPUT);
   pinMode(thrust1LedPin,OUTPUT);
   // read the default values for car1
   initialSteer1 = pulseIn (steer1Pin, HIGH); // read initialsteer value
@@ -96,18 +99,21 @@ void loop()
   thrust1 = throttle1Value - initialThrottle1;
   
   // reset if break is hit for debug
-  /*if(thrust1 < -300) {
+  if(thrust1 < -300) {
+
     // power of the lane
-    if(powerOn == true && lightOkay == true) {
+    if(powerOn == true) {
       powerOn = false;
-      return;  
+      delay(1000);
+      return;
     } 
     
-    if(powerOn == false && lightOkay == true) {
+    if(powerOn == false &&  isReady == true) {
+      isReady = false;
       lightOkay = false;
       return;
     }
-  }*/
+  }
   
   // make sure that the throttle is not flickering
   if(thrust1 > thrustThreashold) {
@@ -125,14 +131,12 @@ void loop()
   Serial.println("");
   
   if(right1 == true) {
-    digitalWrite(steer1LedPin, HIGH);
+    shiftWrite(steer1ShiftPos, HIGH);
     digitalWrite(motor1DirPin, HIGH);
   } else {
-    digitalWrite(steer1LedPin, LOW);
+    shiftWrite(steer1ShiftPos, LOW);
     digitalWrite(motor1DirPin, LOW);
   }
-  
-  
   
   // spin the motor
   int val = map(thrust1, 0, 700, 0, 255);
@@ -144,11 +148,8 @@ void loop()
 }
 
 void startLightSeq() {
-  powerOn = false;
   
   int index;
-  const int delayTime = 1000; // Time (milliseconds) to pause between LEDs
-                       // Make this smaller for faster switching
 
   // Turn all the LEDs on:
  
@@ -156,7 +157,7 @@ void startLightSeq() {
   // (putting "++" after a variable means add one to it)
   // and will then use digitalWrite() to turn that LED on.
   
-  for(index = 0; index <= 5; index++)
+  for(index = 0; index <= numOfLights; index++)
   {
     shiftWrite(index, HIGH);
     delay(delayTime);                
@@ -168,7 +169,7 @@ void startLightSeq() {
   // (putting "--" after a variable means subtract one from it)
   // and will then use digitalWrite() to turn that LED off.
  
-  for(index = 5; index >= 0; index--)
+  for(index = numOfLights; index >= 0; index--)
   {
     shiftWrite(index, LOW);
     //delay(delayTime);
@@ -177,6 +178,7 @@ void startLightSeq() {
   
   // turn the power on
   powerOn = true;
+  isReady = true;
 }
 
 /**
