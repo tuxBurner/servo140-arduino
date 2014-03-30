@@ -3,7 +3,18 @@
 const float throttleScaling = .15;
 const float steerScaling = .15;
 const int steeringThreashold = 10;
-const int thrustThreashold = 10;
+const int thrustThreashold = 20;
+
+// start light pins
+const int datapin = 12; 
+const int clockpin = 6;
+const int latchpin = 10;
+// data of the start light
+byte startLightData = 0;
+boolean lightOkay = false;
+
+// flag if the power is on or not
+boolean powerOn = false;
 
 /**
 * Car 1 vars
@@ -38,6 +49,13 @@ void setup()
   Serial.begin(9600);
 
   /**
+  *  setup start light pins
+  */
+  pinMode(datapin, OUTPUT);
+  pinMode(clockpin, OUTPUT);  
+  pinMode(latchpin, OUTPUT);
+
+  /**
   * Setup car1 
   */
   // set pin for steer1 and throttle1 to digital read for car1
@@ -54,6 +72,10 @@ void setup()
 
 void loop()
 {
+  if(lightOkay == false) {
+    oneAfterAnother();
+  }  
+  
   /**
   * Read car1 steering value
   */
@@ -83,8 +105,13 @@ void loop()
   */
   throttle1Value = pulseIn(throttle1Pin, HIGH, 20000); //read RC channel 2
   thrust1 = throttle1Value - initialThrottle1;
-  thrust1 = thrust1 * throttleScaling; // convert to 0-100 range-c
-  thrust1 = constrain(thrust1, 0, 100); //just in case
+  // make sure that the throttle is not flickering
+  if(thrust1 > thrustThreashold) {
+    thrust1 = thrust1 * throttleScaling; // convert to 0-100 range-c
+    thrust1 = constrain(thrust1, 0, 100); //just in case
+  } else {
+    thrust1 = 0;
+  }
  /* Serial.print("Initial Throttle: ");
   Serial.print (initialThrottle1);
   Serial.print(" Channel 2: ");
@@ -109,13 +136,53 @@ void loop()
   
   
   // spin the motor
-  //if(thrust1 > 10) {
-    int val = map(thrust1, 0, 100, 0, 255);
-//    int val2 = map(thrust1, 0, 100, 0, 155); 
-    analogWrite(thrust1LedPin, val);
-    //  delay(2);
+  int val = map(thrust1, 0, 100, 0, 255);
+  analogWrite(thrust1LedPin, val);
+  // only start motor if power is on
+  if(powerOn == true) {
     analogWrite(motor1PwmPin,val);
-  //}
+  }  
+}
+
+void oneAfterAnother() {
+  int index;
+  const int delayTime = 500; // Time (milliseconds) to pause between LEDs
+                       // Make this smaller for faster switching
+
+  // Turn all the LEDs on:
+ 
+  // This for() loop will step index from 0 to 7
+  // (putting "++" after a variable means add one to it)
+  // and will then use digitalWrite() to turn that LED on.
+  
+  for(index = 0; index <= 5; index++)
+  {
+    shiftWrite(index, HIGH);
+    delay(delayTime);                
+  }
+
+  // Turn all the LEDs off:
+
+  // This for() loop will step index from 7 to 0
+  // (putting "--" after a variable means subtract one from it)
+  // and will then use digitalWrite() to turn that LED off.
+ 
+  for(index = 5; index >= 0; index--)
+  {
+    shiftWrite(index, LOW);
+    //delay(delayTime);
+  }
+  lightOkay = true;
+}
+
+/**
+* write the data to the start light 
+*/
+void shiftWrite(int desiredPin, boolean desiredState) {
+  bitWrite(startLightData,desiredPin,desiredState);
+  shiftOut(datapin, clockpin, MSBFIRST, startLightData);
+  digitalWrite(latchpin, HIGH);
+  digitalWrite(latchpin, LOW);
 }
 
 
