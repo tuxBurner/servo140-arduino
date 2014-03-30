@@ -3,14 +3,23 @@
 const float throttleScaling = .15;
 const float steerScaling = .15;
 const int steeringThreashold = 10;
+const int thrustThreashold = 10;
 
 /**
 * Car 1 vars
 */
+// read pins
 const int steer1Pin = 2; // which pin to read for steer car1
 const int throttle1Pin = 4; // which pin to read to controll throttle car1
-const int steer1LedPin = 13;
+
+// motorctrl pins
+const int motor1DirPin = 12;
+const int motor1PwmPin = 3;
+
+// display led pins
+const int steer1LedPin = 7;
 const int thrust1LedPin = 9;
+
 unsigned long steer1Value; // the current value of throttle 1
 unsigned long throttle1Value; // the current value of throttle 1
 unsigned long initialSteer1; // the value of the initial steering
@@ -91,13 +100,22 @@ void loop()
   
   if(right1 == true) {
     digitalWrite(steer1LedPin, HIGH);
+    digitalWrite(motor1DirPin, HIGH);
   } else {
     digitalWrite(steer1LedPin, LOW);
+    digitalWrite(motor1DirPin, LOW);
   }
   
-  int val = map(thrust1, 0, 100, 0, 255);
-  analogWrite(thrust1LedPin, val);
-  delay(2);
+  
+  
+  // spin the motor
+  //if(thrust1 > 10) {
+    int val = map(thrust1, 0, 100, 0, 255);
+//    int val2 = map(thrust1, 0, 100, 0, 155); 
+    analogWrite(thrust1LedPin, val);
+    //  delay(2);
+    analogWrite(motor1PwmPin,val);
+  //}
 }
 
 
