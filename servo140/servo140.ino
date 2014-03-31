@@ -20,6 +20,8 @@ int currStartLight = -1;
 
 // flag if the power is on or not
 boolean powerOn = true;
+// const which pin the power led in on the ic
+const int powerLedPos = 5;
 
 /**
 * the last readed millis
@@ -76,6 +78,9 @@ void setup()
   // read the default values for car1
   initialSteer1 = pulseIn (steer1Pin, HIGH); // read initialsteer value
   initialThrottle1 = pulseIn (throttle1Pin, HIGH);
+  
+  // turn on power led
+  shiftWrite(powerLedPos, HIGH);
 }
 
 
@@ -109,6 +114,7 @@ void loop()
     // power of the lane
     if(powerOn == true) {
       powerOn = false;
+      shiftWrite(powerLedPos, LOW);
       delay(500);
       return;
     } 
@@ -195,6 +201,8 @@ void startLightControl() {
       currStartLight = -1;
       // turn the power on
       powerOn = true;
+      // turn on the power led
+      shiftWrite(powerLedPos, HIGH);
     }  
   }  
 }
