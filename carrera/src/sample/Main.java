@@ -5,20 +5,24 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
 public class Main extends Application {
 
 
-    public static Parent root;
-
+    public static Controller controller;
 
     @Override
     public void start(Stage primaryStage) throws Exception{
 
 
-        root = FXMLLoader.load(getClass().getResource("MainPanel.fxml"));
+        //root = FXMLLoader.load(getClass().getResource("MainPanel.fxml"));
+
+        FXMLLoader fxmlLoader = new FXMLLoader();
+        Parent root = (Parent) fxmlLoader.load(getClass().getResource("MainPanel.fxml").openStream());
+        controller = (Controller) fxmlLoader.getController();
 
         primaryStage.setTitle("Carrera Manager");
         primaryStage.setScene(new Scene(root, 300, 275));
@@ -33,7 +37,10 @@ public class Main extends Application {
                 SerialHelper.get().closePort();
             }
         });
+
     }
+
+
 
 
     public static void main(String[] args) {

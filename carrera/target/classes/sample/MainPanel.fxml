@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.VBox?>
 <?import jfxtras.labs.scene.control.gauge.Gauge?>
 <VBox alignment="center" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8"
       fx:controller="sample.Controller">
     <children>
         <ComboBox fx:id="comPortBox" prefWidth="150.0" onAction="#selectComPort"/>
 
+        <Label fx:id="serialDate"></Label>
 
         <Gauge fx:id="carAGauge">
 

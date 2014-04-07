@@ -128,6 +128,8 @@ void loop()
   // make sure that the throttle is not flickering
   if(thrust1 > thrustThreashold) {
     thrust1 = constrain(thrust1, 0, 700); //just in case
+    thrust1 = map(thrust1, 0, 700, 0, 255);
+    thrust1 = constrain(thrust1,0,255);
   } else {
     thrust1 = 0;
   }
@@ -154,12 +156,10 @@ void loop()
   }
   
   // spin the motor
-  int val = map(thrust1, 0, 700, 0, 255);
-  val = constrain(val,0,255);
-  analogWrite(thrust1LedPin, val);
+  analogWrite(thrust1LedPin, thrust1);
   // only start motor if power is on
   if(powerOn == true) {
-    analogWrite(motor1PwmPin,val);
+    analogWrite(motor1PwmPin,thrust1);
   }  
 }
 
