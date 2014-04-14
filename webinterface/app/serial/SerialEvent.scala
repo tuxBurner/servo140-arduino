@@ -1,0 +1,35 @@
+package serial
+
+import jssc.{SerialPort, SerialPortEvent, SerialPortEventListener}
+import play.api.Logger
+
+/**
+ * Created by tuxburner on 4/14/14.
+ */
+class SerialEvent(serialPort: SerialPort) extends SerialPortEventListener {
+  val DELIMITER:Byte =  '\n';
+  var lastValue:String = "";
+  //val actor = SerialActor.attach();
+
+
+    override def serialEvent(serialPortEvent:SerialPortEvent) {
+      if (serialPortEvent.isRXCHAR()) {
+        //try {
+          val byteCount = serialPortEvent.getEventValue();
+          val bufferIn = serialPort.readBytes(byteCount);
+
+          //bufferIn.map(b => )
+
+          for(read <- bufferIn) {
+            if(read != DELIMITER) {
+              lastValue+=read.toChar;
+            } else {
+              Logger.debug(lastValue);
+              // send message to the serial ws
+              SerialActor.roomActor ! SendMessage(lastValue);
+              lastValue="";
+            }
+          }
+        }
+    }
+}

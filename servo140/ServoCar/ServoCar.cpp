@@ -97,14 +97,13 @@ void ServoCar::controllMotor(boolean powerOn) {
   if(_fuel < 0) {
     _thrust = 0;
     int current = millis();
-    if(_lastFuelTimRead == 0) {
+    if(_refillTimer == 0) {
       _lastFuelTimRead = current + _refillTime;
     }
 
     _refillTimer = _lastFuelTimRead - current;  
     if(_refillTimer <=  0) {
       _fuel = _fuelFull;
-      _lastFuelTimRead = 0;
       _refillTimer = 0;
     }
   }
