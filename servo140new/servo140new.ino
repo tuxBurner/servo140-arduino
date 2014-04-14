@@ -43,7 +43,7 @@ void setup()
   // turn on power led
   shiftWrite(powerLedPos, HIGH);
   
-  car2.setThrust(125);
+  car2.setThrust(150);
 }
 
 void loop()
@@ -69,6 +69,9 @@ void loop()
     }
   }
   
+  car1.controllMotor(powerOn);
+  car2.controllMotor(powerOn);
+  
   Serial.print(currStartLight);
   Serial.print(",");
   Serial.print(powerOn);
@@ -78,8 +81,6 @@ void loop()
   car2.dataToSerial();
   Serial.println("");
 
-  car1.controllMotor(powerOn);
-  car2.controllMotor(powerOn);
 }
 
 /**

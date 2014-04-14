@@ -79,7 +79,8 @@ void ServoCar::controllMotor(boolean powerOn) {
     digitalWrite(_motorPin1, LOW);
   }
 
-  if(powerOn == true && _ghostCar == false) {
+  // take care of the fuel handling
+  if(powerOn == true && _ghostCar == false && _careOfFuel == true) {
     int current = millis();
     if(_lastFuelRead == 0 || current - _lastFuelRead >= 250) {
       _lastFuelRead = current;
@@ -87,7 +88,28 @@ void ServoCar::controllMotor(boolean powerOn) {
     }
   }
 
-  if(powerOn == true && _fuel >= carOutOfFuel) {
+  // car is on reserve well half thrust
+  if(_fuel <= _carOnReserve) {    
+    _thrust = constrain(_thrust,0,125);
+  }
+
+  // refill the fuel
+  if(_fuel < 0) {
+    _thrust = 0;
+    int current = millis();
+    if(_lastFuelTimRead == 0) {
+      _lastFuelTimRead = current + _refillTime;
+    }
+
+    _refillTimer = _lastFuelTimRead - current;  
+    if(_refillTimer <=  0) {
+      _fuel = _fuelFull;
+      _lastFuelTimRead = 0;
+      _refillTimer = 0;
+    }
+  }
+
+  if(powerOn == true && _fuel >= 0) {
     analogWrite(_motorPin2,_thrust);
   } else {
     analogWrite(_motorPin2,0);
@@ -100,6 +122,8 @@ void ServoCar::dataToSerial() {
   Serial.print(_steerRight);
   Serial.print(",");
   Serial.print(_fuel);
+  Serial.print(",");
+  Serial.print(_refillTimer);
 }
 
 /**
