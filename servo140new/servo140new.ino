@@ -114,7 +114,7 @@ void printCurrentSettings() {
 /**
  * sets the values from the setting at the given car
  */
-void setCarValues(ServoCar car, int fromIndex) {
+void setCarValues(ServoCar &car, int fromIndex) {
   int index = fromIndex;
   boolean ghostCar = (getValueFromSerialInput(serialInputStr,index++) == "1");
   int carThrust = getValueFromSerialInput(serialInputStr,index++).toInt();
