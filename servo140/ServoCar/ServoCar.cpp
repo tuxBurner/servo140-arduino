@@ -125,6 +125,21 @@ void ServoCar::dataToSerial() {
   Serial.print(_refillTimer);
 }
 
+
+void ServoCar::settingsToSerial() {
+  Serial.print(_ghostCar);
+  Serial.print(",");
+  Serial.print(_thrust);
+  Serial.print(",");
+  Serial.print(_steerRight);
+  Serial.print(",");
+  Serial.print(_fuelFull);
+  Serial.print(",");
+  Serial.print(_carOnReserve);
+  Serial.print(",");
+  Serial.print(_refillTime);
+}
+
 /**
 * getters and setters
 */

@@ -56,7 +56,13 @@ void loop()
   // when data comes in we read until
   while (Serial.available() > 0) {
     serialInputStr = Serial.readStringUntil('\n');
-    setCarValues(car1,0);
+    // return the current settings
+    if(serialInputStr.startsWith("G")) {
+      printCurrentSettings();
+    } 
+    else {
+      setCarValues(car1,0);
+    }  
   }
 
   startLightControl();
@@ -95,6 +101,17 @@ void loop()
 }
 
 /**
+ * Returns the currentSettings
+ */
+void printCurrentSettings() {
+  Serial.print("S,");
+  car1.settingsToSerial();
+  Serial.print(",");
+  car2.settingsToSerial();  
+  Serial.println("");
+}
+
+/**
  * sets the values from the setting at the given car
  */
 void setCarValues(ServoCar car, int fromIndex) {
@@ -106,7 +123,7 @@ void setCarValues(ServoCar car, int fromIndex) {
   long car1FullFuel = getValueFromSerialInput(serialInputStr,index++).toInt();
   long car1OnReserve = getValueFromSerialInput(serialInputStr,index++).toInt();
   long car1RefillTime = getValueFromSerialInput(serialInputStr,index++).toInt();
-  
+
   car.setIsGhostCar(ghostCar);
   car.setThrust(carThrust);
   car.setSteerRight(steerRight);
@@ -120,7 +137,7 @@ String getValueFromSerialInput(String data,  int index)
   char separator = ',';
   int found = 0;
   int strIndex[] = {
-    0, -1      };
+    0, -1        };
   int maxIndex = data.length()-1;
 
   for(int i=0; i<=maxIndex && found<=index; i++){
@@ -188,6 +205,7 @@ void shiftWrite(int desiredPin, boolean desiredState) {
   digitalWrite(latchpin, HIGH);
   digitalWrite(latchpin, LOW);
 }
+
 
 
 

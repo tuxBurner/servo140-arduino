@@ -18,7 +18,8 @@ class ServoCar {
    void setThrust(int thrust);
    void setIsGhostCar(boolean ghostCar);
    void controllMotor(boolean powerOn); 
-   void dataToSerial();  
+   void dataToSerial();
+   void settingsToSerial();  
   private:
     // threashholds
     const int rSteeringThreashold = 250;
