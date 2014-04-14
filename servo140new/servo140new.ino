@@ -56,8 +56,7 @@ void loop()
   // when data comes in we read until
   while (Serial.available() > 0) {
     serialInputStr = Serial.readStringUntil('\n');
-
-
+    setCarValues(car1,0);
   }
 
   startLightControl();
@@ -96,6 +95,24 @@ void loop()
 }
 
 /**
+ * sets the values from the setting at the given car
+ */
+void setCarValues(ServoCar car, int fromIndex) {
+  int index = fromIndex;
+  boolean ghostCar = (getValueFromSerialInput(serialInputStr,index++) == "1");
+  int carThrust = getValueFromSerialInput(serialInputStr,index++).toInt();
+  boolean steerRight = (getValueFromSerialInput(serialInputStr,index++) == "1");
+  boolean car1CarOfFuel = (getValueFromSerialInput(serialInputStr,index++) == "1");
+  long car1FullFuel = getValueFromSerialInput(serialInputStr,index++).toInt();
+  long car1OnReserve = getValueFromSerialInput(serialInputStr,index++).toInt();
+  long car1RefillTime = getValueFromSerialInput(serialInputStr,index++).toInt();
+  
+  car.setIsGhostCar(ghostCar);
+  car.setThrust(carThrust);
+  car.setSteerRight(steerRight);
+}
+
+/**
  * Gets the value from the serialInput
  */
 String getValueFromSerialInput(String data,  int index)
@@ -103,7 +120,7 @@ String getValueFromSerialInput(String data,  int index)
   char separator = ',';
   int found = 0;
   int strIndex[] = {
-    0, -1  };
+    0, -1      };
   int maxIndex = data.length()-1;
 
   for(int i=0; i<=maxIndex && found<=index; i++){
@@ -171,6 +188,8 @@ void shiftWrite(int desiredPin, boolean desiredState) {
   digitalWrite(latchpin, HIGH);
   digitalWrite(latchpin, LOW);
 }
+
+
 
 
 
