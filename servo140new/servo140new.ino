@@ -26,6 +26,11 @@ const int powerLedPos = 5;
  */
 int lastMillis = 0;
 
+/**
+ * serial input of a str
+ */
+String serialInputStr;
+
 void setup()
 {
   /**
@@ -42,12 +47,19 @@ void setup()
 
   // turn on power led
   shiftWrite(powerLedPos, HIGH);
-  
+
   car2.setThrust(150);
 }
 
 void loop()
 {
+  // when data comes in we read until
+  while (Serial.available() > 0) {
+    serialInputStr = Serial.readStringUntil('\n');
+
+
+  }
+
   startLightControl();
 
   car1.readData();
@@ -68,19 +80,41 @@ void loop()
       currStartLight = 0;
     }
   }
-  
+
   car1.controllMotor(powerOn);
   car2.controllMotor(powerOn);
-  
-  Serial.print(currStartLight);
-  Serial.print(",");
-  Serial.print(powerOn);
-  Serial.print(",");
-  car1.dataToSerial();
-  Serial.print(",");
-  car2.dataToSerial();
-  Serial.println("");
 
+  /*Serial.print(currStartLight);
+   Serial.print(",");
+   Serial.print(powerOn);
+   Serial.print(",");
+   car1.dataToSerial();
+   Serial.print(",");
+   car2.dataToSerial();
+   Serial.println("");*/
+
+}
+
+/**
+ * Gets the value from the serialInput
+ */
+String getValueFromSerialInput(String data,  int index)
+{
+  char separator = ',';
+  int found = 0;
+  int strIndex[] = {
+    0, -1  };
+  int maxIndex = data.length()-1;
+
+  for(int i=0; i<=maxIndex && found<=index; i++){
+    if(data.charAt(i)==separator || i==maxIndex){
+      found++;
+      strIndex[0] = strIndex[1]+1;
+      strIndex[1] = (i == maxIndex) ? i+1 : i;
+    }
+  }
+
+  return found>index ? data.substring(strIndex[0], strIndex[1]) : "";
 }
 
 /**
@@ -137,5 +171,6 @@ void shiftWrite(int desiredPin, boolean desiredState) {
   digitalWrite(latchpin, HIGH);
   digitalWrite(latchpin, LOW);
 }
+
 
 

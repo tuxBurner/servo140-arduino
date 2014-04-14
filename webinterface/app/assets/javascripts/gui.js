@@ -2,6 +2,8 @@ var websocket = null;
 
 var car1SpeedGauge,
     car1FuelGauge,
+    car2SpeedGauge,
+    car2FuelGauge,
     startLight1,
     startLight2,
     startLight3,
@@ -84,6 +86,33 @@ $(function () {
         minValue: 0,
         maxValue: 10000
     });
+
+    // car2 stuff
+    car2SpeedGauge = new steelseries.RadialBargraph('car2SpeedCanvas', {
+        gaugeType: steelseries.GaugeType.TYPE4,
+        size: 201,
+        titleString: 'Car B',
+        unitString: 'Power',
+        valueGradient: powerGrad,
+        useValueGradient: true,
+        threshold: 50,
+        lcdVisible: true,
+        minValue: 0,
+        maxValue: 250
+    });
+
+    car2FuelGauge = new steelseries.LinearBargraph('car2FuelCanvas', {
+        width: 320,
+        height: 140,
+        valueGradient: fuelGrad,
+        useValueGradient: true,
+        titleString: "Car B",
+        unitString: "Fuel",
+        threshold: 1000,
+        lcdVisible: true,
+        minValue: 0,
+        maxValue: 10000
+    });
 });
 
 function onMessage(evt) {
@@ -122,7 +151,6 @@ function onMessage(evt) {
 
         car1SpeedGauge.setValue(data[2]);
         car1FuelGauge.setValue(data[4]);
-
         if(data[5] > 0) {
             // how many time is left
             var percentage = data[5] / (10000 / 100) ;
@@ -130,6 +158,17 @@ function onMessage(evt) {
             // how much is fueld up
             var value = 10000 - ((10000 / 100) * percentage)
             car1FuelGauge.setValue(value);
+        }
+
+        car2SpeedGauge.setValue(data[6]);
+        car2FuelGauge.setValue(data[8]);
+        if(data[9] > 0) {
+            // how many time is left
+            var percentage = data[9] / (10000 / 100) ;
+
+            // how much is fueld up
+            var value = 10000 - ((10000 / 100) * percentage)
+            car2FuelGauge.setValue(value);
         }
     }
 }
