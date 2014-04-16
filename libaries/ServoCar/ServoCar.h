@@ -15,7 +15,11 @@ class ServoCar {
    */
    void readData();
 
+   /**
+   * Does the motor controll and fuel handling
+   */
    void controllMotor(boolean powerOn); 
+
    /**
    * the current car data
    */

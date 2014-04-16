@@ -1,9 +1,14 @@
 #include <ServoCar.h>
+#include <ServoTimer.h>
 
 // car1
 ServoCar car1(false,true,2,4,12,3);
 // car 2
 ServoCar car2(true,false,-1,-1,13,11);
+
+// timer
+ServoTimer timer1(A5);
+ServoTimer timer2(A4);
 
 // start light pins
 const int datapin = 12; 
@@ -31,13 +36,6 @@ unsigned long lastMillis = 0;
  */
 String serialInputStr;
 
-// timer stuff
-const int timePin = A5;
-unsigned long lastReadedTime = 0;
-unsigned long lapTime = 0;
-unsigned long btnDebounce=0;
-boolean lapCount = false;
-
 
 
 void setup()
@@ -56,16 +54,10 @@ void setup()
 
   // turn on power led
   shiftWrite(powerLedPos, HIGH);
-
-  pinMode(timePin, INPUT_PULLUP);
-
 }
 
 void loop()
 {
-
-  readTimer();
-
 
   // when data comes in we read until
   while (Serial.available() > 0) {
@@ -82,6 +74,9 @@ void loop()
   }
 
   startLightControl();
+
+  timer1.doTiming(powerOn);
+  timer2.doTiming(powerOn);
 
   car1.readData();
   car2.readData();
@@ -105,46 +100,19 @@ void loop()
   car1.controllMotor(powerOn);
   car2.controllMotor(powerOn);
 
-  /* Serial.print(currStartLight);
-   Serial.print(",");
-   Serial.print(powerOn);
-   Serial.print(",");
-   car1.dataToSerial();
-   Serial.print(",");
-   car2.dataToSerial();
-   Serial.println("");*/
-
-}
-
-void readTimer() {
-
-  unsigned long current = millis();
-  
-  // no time action when power ist off
-  if(powerOn == false) {
-    lastReadedTime = current;
-    return;
-  }
-
-  unsigned long diff = current - lastReadedTime;
-  int val = analogRead(timePin);
-  lapTime+= diff;
-  
-  Serial.print(lapTime);
+  Serial.print(currStartLight);
   Serial.print(",");
-  if(val < 100) {
-    if(current - btnDebounce > 1000) {
-      btnDebounce = current;
-      lapTime = 0;
-      lapCount = true;
-    }
-  }
-  Serial.print(lapCount);
+  Serial.print(powerOn);
+  Serial.print(",");
+  car1.dataToSerial();
+  Serial.print(",");
+  car2.dataToSerial();
+  Serial.print(",");
+  timer1.writeToSerial();
+  Serial.print(",");
+  timer2.writeToSerial();
   Serial.println("");
-  
-  lapCount = false;
-  lastReadedTime = current;
-  
+
 }
 
 /**
@@ -188,7 +156,7 @@ String getValueFromSerialInput(String data,  int index)
   char separator = ',';
   int found = 0;
   int strIndex[] = {
-    0, -1              };
+    0, -1                  };
   int maxIndex = data.length()-1;
 
   for(int i=0; i<=maxIndex && found<=index; i++){
@@ -256,6 +224,8 @@ void shiftWrite(int desiredPin, boolean desiredState) {
   digitalWrite(latchpin, HIGH);
   digitalWrite(latchpin, LOW);
 }
+
+
 
 
 
