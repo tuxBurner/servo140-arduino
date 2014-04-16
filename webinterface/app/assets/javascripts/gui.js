@@ -1,9 +1,9 @@
-var websocket = null;
-
 var car1SpeedGauge,
     car1FuelGauge,
+    car1Laptimer,
     car2SpeedGauge,
     car2FuelGauge,
+    car2Laptimer,
     startLight1,
     startLight2,
     startLight3,
@@ -23,23 +23,6 @@ var fuelGrad = new steelseries.gradientWrapper(0, 10000, gradSections, gradColor
 
 
 $(function () {
-    var wsUri = jsRoutes.controllers.ApplicationController.joinRoomWs().webSocketURL();
-
-    websocket = new WebSocket(wsUri);
-    websocket.onopen = function (evt) {
-    };
-    websocket.onclose = function (evt) {
-    };
-    websocket.onmessage = function (evt) {
-        onMessage(evt)
-    };
-    websocket.onerror = function (evt) {
-        onError(evt)
-    };
-
-    function onError(evt) {
-        websocket.close();
-    }
 
     // startlight
     startLight1 = new steelseries.Led('startLight1Canvas');
@@ -87,6 +70,12 @@ $(function () {
         maxValue: 10000
     });
 
+    car1Laptimer = new steelseries.DisplaySingle('car1LaptimerCanvas', {
+        width: 120,
+        height: 50
+    });
+
+
     // car2 stuff
     car2SpeedGauge = new steelseries.RadialBargraph('car2SpeedCanvas', {
         gaugeType: steelseries.GaugeType.TYPE4,
@@ -113,11 +102,16 @@ $(function () {
         minValue: 0,
         maxValue: 10000
     });
+
+    car2Laptimer = new steelseries.DisplaySingle('car2LaptimerCanvas', {
+        width: 120,
+        height: 50
+    });
 });
 
-function onMessage(evt) {
-    var data = evt.data.split(',');
-    if (data.length == 10) {
+function onMessage(data) {
+    var data = data.split(',');
+    if (data.length == 14) {
 
         if (data[0] == -1) {
             startLight1.setLedOnOff(false);
@@ -159,6 +153,10 @@ function onMessage(evt) {
             var value = 10000 - ((10000 / 100) * percentage)
             car1FuelGauge.setValue(value);
         }
+
+        car1Laptimer.setValue(data[10] / 1000);
+        car2Laptimer.setValue(data[12] / 1000);
+        //console.error(data[10])
 
         car2SpeedGauge.setValue(data[6]);
         car2FuelGauge.setValue(data[8]);

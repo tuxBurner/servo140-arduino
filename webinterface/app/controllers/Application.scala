@@ -2,7 +2,8 @@ package controllers
 
 import play.api.mvc._
 import plugins.jsAnnotations.{JSRoute, JSRouteScala}
-import serial.SerialActor
+import serial.{SerialReader, SerialActor}
+
 
 object ApplicationController extends Controller {
 
@@ -15,6 +16,15 @@ object ApplicationController extends Controller {
       Ok(views.html.index.render((request)))
   }
 
+  /**
+   * Tells over the serial port to get the settings
+   * @return
+   */
+  @JSRoute
+  def getSerialSettings = Action {
+    SerialReader.sendData("G");
+    Ok;
+  }
 
   @JSRoute
   def joinRoomWs() = WebSocket.async[String] {

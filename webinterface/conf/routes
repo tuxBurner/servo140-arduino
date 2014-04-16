@@ -4,6 +4,7 @@
 
 # Home page
 GET        /                                 controllers.ApplicationController.index
+GET        /serial/settings                  controllers.ApplicationController.getSerialSettings
 GET        /ws                               controllers.ApplicationController.joinRoomWs
 
 

@@ -7,14 +7,14 @@ import serial.SerialReader
  */
 object Global extends GlobalSettings {
 
-  val serialReader:SerialReader = new SerialReader();
+
 
   override def onStart(app: Application) {
-    serialReader.openConnection();
+    SerialReader.openConnection();
 
   }
 
   override def  onStop(app: Application) {
-    serialReader.closeConnection();
+    SerialReader.closeConnection();
   }
 }
