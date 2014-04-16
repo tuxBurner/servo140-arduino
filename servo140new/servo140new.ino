@@ -62,6 +62,8 @@ void loop()
     } 
     else {
       setCarValues(car1,0);
+      setCarValues(car2,7);
+      printCurrentSettings();
     }  
   }
 
@@ -89,14 +91,14 @@ void loop()
   car1.controllMotor(powerOn);
   car2.controllMotor(powerOn);
 
-  /*Serial.print(currStartLight);
-   Serial.print(",");
-   Serial.print(powerOn);
-   Serial.print(",");
-   car1.dataToSerial();
-   Serial.print(",");
-   car2.dataToSerial();
-   Serial.println("");*/
+  Serial.print(currStartLight);
+  Serial.print(",");
+  Serial.print(powerOn);
+  Serial.print(",");
+  car1.dataToSerial();
+  Serial.print(",");
+  car2.dataToSerial();
+  Serial.println("");
 
 }
 
@@ -141,7 +143,7 @@ String getValueFromSerialInput(String data,  int index)
   char separator = ',';
   int found = 0;
   int strIndex[] = {
-    0, -1        };
+    0, -1          };
   int maxIndex = data.length()-1;
 
   for(int i=0; i<=maxIndex && found<=index; i++){
@@ -209,6 +211,7 @@ void shiftWrite(int desiredPin, boolean desiredState) {
   digitalWrite(latchpin, HIGH);
   digitalWrite(latchpin, LOW);
 }
+
 
 
 
