@@ -10,16 +10,54 @@ class ServoCar {
   public:
    ServoCar(boolean ghostCar,boolean steerRight, int steerPin, int throttlePin, int motorPin1, int motorPin2);
    void readData();
-   int getThrust();
-   boolean getSteerRight();
-   boolean getIsGhostCar();
-   boolean breakHit();
-   void setSteerRight(boolean steerRight);
-   void setThrust(int thrust);
-   void setIsGhostCar(boolean ghostCar);
+
    void controllMotor(boolean powerOn); 
+   /**
+   * the current car data
+   */
    void dataToSerial();
+   /**
+   * prints the settings to the serial
+   */
    void settingsToSerial();  
+   
+   /**
+   * sets if to steer right or not mainly used for ghostcar
+   */
+   void setSteerRight(boolean steerRight);
+   /**
+   * sets the thrust mainly used for ghostcar
+   */
+   void setThrust(int thrust);
+   /**
+   * sets wether this car is a ghost car or not
+   */
+   void setIsGhostCar(boolean ghostCar);
+
+   /**
+   * marks if the car cares of fuel or not
+   */
+   void setCareOfFuel(boolean careOfFuel);
+
+   /**
+   * sets how many fuel is in the tank
+   */
+   void setFullFuel(unsigned long fuelFull);
+
+   /**
+   * when is reserve of the fuel reached
+   */
+   void setOnReserve(unsigned long onReserve);
+  
+   /**
+   * how long does it take to refill 
+   */
+   void setRefillTime(long refillTime);
+
+   /**
+   * Returns if the break was hit or not
+   */
+   boolean breakHit();
   private:
     // threashholds
     const int rSteeringThreashold = 250;
@@ -40,7 +78,7 @@ class ServoCar {
     // hit the break
     boolean _break;    
     // fuel vars
-    boolean _careOfFuel = true;
+    boolean _careOfFuel = false;
     unsigned long _fuelFull = 10000;
     long _fuel = _fuelFull;
     unsigned  long _carOnReserve = 1000;

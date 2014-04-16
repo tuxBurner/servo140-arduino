@@ -140,23 +140,9 @@ void ServoCar::settingsToSerial() {
   Serial.print(_refillTime);
 }
 
-/**
-* getters and setters
-*/
-int ServoCar::getThrust() {
-	return _thrust;
-}
 
 boolean ServoCar::breakHit() {
   return _break;
-}
-
-boolean ServoCar::getSteerRight() {
-	return _steerRight; 
-}
-
-boolean ServoCar::getIsGhostCar() {
-	return _ghostCar;
 }
 
 void ServoCar::setThrust(int thrust) {
@@ -164,10 +150,28 @@ void ServoCar::setThrust(int thrust) {
   _thrust = constrain(_thrust,0,255);
 }
 
+
 void ServoCar::setSteerRight(boolean steerRight) {
 	_steerRight = steerRight;
 }
 
 void ServoCar::setIsGhostCar(boolean ghostCar) {
 	_ghostCar = ghostCar;
+}
+
+void ServoCar::setCareOfFuel(boolean careOfFuel) {
+  _careOfFuel = careOfFuel;
+}
+
+void ServoCar::setFullFuel(unsigned long fuelFull) {
+  _fuelFull = fuelFull;
+}
+
+void ServoCar::setOnReserve(unsigned long onReserve) {
+  _carOnReserve = onReserve;
+}
+  
+   
+void ServoCar::setRefillTime(long refillTime) {
+  _refillTime = refillTime;
 }

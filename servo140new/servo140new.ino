@@ -119,14 +119,18 @@ void setCarValues(ServoCar &car, int fromIndex) {
   boolean ghostCar = (getValueFromSerialInput(serialInputStr,index++) == "1");
   int carThrust = getValueFromSerialInput(serialInputStr,index++).toInt();
   boolean steerRight = (getValueFromSerialInput(serialInputStr,index++) == "1");
-  boolean car1CarOfFuel = (getValueFromSerialInput(serialInputStr,index++) == "1");
-  long car1FullFuel = getValueFromSerialInput(serialInputStr,index++).toInt();
-  long car1OnReserve = getValueFromSerialInput(serialInputStr,index++).toInt();
-  long car1RefillTime = getValueFromSerialInput(serialInputStr,index++).toInt();
+  boolean careOfFuel = (getValueFromSerialInput(serialInputStr,index++) == "1");
+  long fullFuel = getValueFromSerialInput(serialInputStr,index++).toInt();
+  long onReserve = getValueFromSerialInput(serialInputStr,index++).toInt();
+  long refillTime = getValueFromSerialInput(serialInputStr,index++).toInt();
 
   car.setIsGhostCar(ghostCar);
   car.setThrust(carThrust);
   car.setSteerRight(steerRight);
+  car.setCareOfFuel(careOfFuel);
+  car.setFullFuel(fullFuel);
+  car.setOnReserve(onReserve);
+  car.setRefillTime(refillTime);
 }
 
 /**
