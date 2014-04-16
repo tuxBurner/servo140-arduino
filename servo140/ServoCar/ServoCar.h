@@ -9,6 +9,10 @@
 class ServoCar {
   public:
    ServoCar(boolean ghostCar,boolean steerRight, int steerPin, int throttlePin, int motorPin1, int motorPin2);
+
+   /**
+   * Read the current data from the remote reciever
+   */
    void readData();
 
    void controllMotor(boolean powerOn); 

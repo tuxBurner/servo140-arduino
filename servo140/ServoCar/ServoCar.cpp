@@ -5,13 +5,13 @@
 #include "ServoCar.h"
 
 ServoCar::ServoCar(boolean ghostCar,boolean steerRight,int steerPin, int throttlePin, int motorPin1, int motorPin2) {
-    // store the vars from the constructor to the private vars	
+  // store the vars from the constructor to the private vars	
 	_ghostCar = ghostCar;
 	_steerPin = steerPin;
-    _throttlePin = throttlePin;
-    _motorPin1 = motorPin1;
-    _motorPin2 = motorPin2; 
-    _steerRight = steerRight;
+  _throttlePin = throttlePin;
+  _motorPin1 = motorPin1;
+  _motorPin2 = motorPin2; 
+  _steerRight = steerRight;
 
 	// normal mode has input
 	if(_ghostCar == false) {
@@ -81,7 +81,7 @@ void ServoCar::controllMotor(boolean powerOn) {
 
   // take care of the fuel handling
   if(powerOn == true && _ghostCar == false && _careOfFuel == true) {
-    int current = millis();
+    unsigned long current = millis();
     if(_lastFuelRead == 0 || current - _lastFuelRead >= 250) {
       _lastFuelRead = current;
       _fuel = _fuel -_thrust;
@@ -96,7 +96,7 @@ void ServoCar::controllMotor(boolean powerOn) {
   // refill the fuel
   if(_fuel < 0) {
     _thrust = 0;
-    int current = millis();
+    unsigned long  current = millis();
     if(_refillTimer == 0) {
       _lastFuelTimRead = current + _refillTime;
     }
