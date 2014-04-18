@@ -12,6 +12,14 @@ $(function () {
         $('#settingsModal').modal('show');
     });
 
+    $('#powerOffBtn').click(function () {
+        powerOff();
+    });
+
+    $('#lightBtn').click(function () {
+        startLightSeq();
+    });
+
 
     /**
      * Update the value when changing the slider
@@ -24,8 +32,9 @@ $(function () {
     /**
      * Take care of saving the settings to the arduino
      */
-    $('#saveSettingsBtn').click(function() {
-      var settingsStr =  readSettingsForCar(1) + ',' +readSettingsForCar(2);;
+    $('#saveSettingsBtn').click(function () {
+        var settingsStr = readSettingsForCar(1) + ',' + readSettingsForCar(2);
+        ;
         pAjax(jsRoutes.controllers.ApplicationController.setSerialSettings(settingsStr), null, function (data) {
             window.location.reload();
         }, function (data) {
@@ -37,25 +46,43 @@ $(function () {
 });
 
 /**
+ * Calls the backend to powerOff the system
+ */
+var powerOff = function () {
+    pAjax(jsRoutes.controllers.ApplicationController.powerOff(), null, function (data) {
+    }, function (data) {
+    });
+}
+
+/**
+ * Calls the backend to start the light sequence
+ */
+var startLightSeq = function () {
+    pAjax(jsRoutes.controllers.ApplicationController.startLightSeq(), null, function (data) {
+    }, function (data) {
+    });
+}
+
+/**
  * Reads the settings for the given car
  * @param carNr
  * @returns {string}
  */
-var readSettingsForCar = function(carNr) {
+var readSettingsForCar = function (carNr) {
     var carSttingsStr = "";
-    carSttingsStr+=($('#ghostCar_'+carNr).prop('checked')) ? '1' : '0';
-    carSttingsStr+=',';
-    carSttingsStr+=$('#thrust_'+carNr).val();
-    carSttingsStr+=',';
-    carSttingsStr+=($('#steerRight_'+carNr).prop('checked')) ? '1' : '0';
-    carSttingsStr+=',';
-    carSttingsStr+=($('#carForFuel_'+carNr).prop('checked')) ? '1' : '0';
-    carSttingsStr+=',';
-    carSttingsStr+=$('#fuelFull_'+carNr).val();
-    carSttingsStr+=',';
-    carSttingsStr+=$('#fuelReserve_'+carNr).val();
-    carSttingsStr+=',';
-    carSttingsStr+=$('#refillTime_'+carNr).val() * 1000;
+    carSttingsStr += ($('#ghostCar_' + carNr).prop('checked')) ? '1' : '0';
+    carSttingsStr += ',';
+    carSttingsStr += $('#thrust_' + carNr).val();
+    carSttingsStr += ',';
+    carSttingsStr += ($('#steerRight_' + carNr).prop('checked')) ? '1' : '0';
+    carSttingsStr += ',';
+    carSttingsStr += ($('#carForFuel_' + carNr).prop('checked')) ? '1' : '0';
+    carSttingsStr += ',';
+    carSttingsStr += $('#fuelFull_' + carNr).val();
+    carSttingsStr += ',';
+    carSttingsStr += $('#fuelReserve_' + carNr).val();
+    carSttingsStr += ',';
+    carSttingsStr += $('#refillTime_' + carNr).val() * 1000;
 
     return carSttingsStr;
 }

@@ -6,6 +6,8 @@
 GET         /                                 controllers.ApplicationController.index
 GET         /serial/settings                  controllers.ApplicationController.getSerialSettings
 POST        /serial/settings/:settings        controllers.ApplicationController.setSerialSettings(settings: String)
+POST        /powerOff                         controllers.ApplicationController.powerOff
+POST        /startLightSeq                    controllers.ApplicationController.startLightSeq
 GET         /ws                               controllers.ApplicationController.joinRoomWs
 
 

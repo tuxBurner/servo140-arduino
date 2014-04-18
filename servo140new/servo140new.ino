@@ -66,6 +66,13 @@ void loop()
     if(serialInputStr.startsWith("G")) {
       printCurrentSettings();
     } 
+    else if(serialInputStr.startsWith("H")) {
+      powerOn = !powerOn;
+    } 
+    else if(serialInputStr.startsWith("L")) {
+      powerOn = false;
+      currStartLight = 0;
+    }
     else {
       setCarValues(car1,0);
       setCarValues(car2,7);
@@ -156,7 +163,7 @@ String getValueFromSerialInput(String data,  int index)
   char separator = ',';
   int found = 0;
   int strIndex[] = {
-    0, -1                  };
+    0, -1                    };
   int maxIndex = data.length()-1;
 
   for(int i=0; i<=maxIndex && found<=index; i++){
@@ -224,6 +231,7 @@ void shiftWrite(int desiredPin, boolean desiredState) {
   digitalWrite(latchpin, HIGH);
   digitalWrite(latchpin, LOW);
 }
+
 
 
 

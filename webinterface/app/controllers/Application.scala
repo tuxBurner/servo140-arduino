@@ -37,6 +37,26 @@ object ApplicationController extends Controller {
     Ok;
   }
 
+  /**
+   * Tells the arduino to turn off the power
+   * @return
+   */
+  @JSRoute
+  def powerOff() = Action {
+    SerialReader.sendData("H");
+    Ok;
+  }
+
+  /**
+   * Tells the arduino to start the light sequence
+   * @return
+   */
+  @JSRoute
+  def startLightSeq() = Action {
+    SerialReader.sendData("L");
+    Ok;
+  }
+
   @JSRoute
   def joinRoomWs() = WebSocket.async[String] {
     request =>

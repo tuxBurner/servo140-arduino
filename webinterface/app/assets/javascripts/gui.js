@@ -60,6 +60,11 @@ var setupCarControlls = function (carNr) {
     var carName = 'car' + carNr;
     var carSettings = settings[carName];
 
+    var carHeadline='Car '+carNr;
+    carHeadline+=(settings[carName].ghostCar) ? '(Ghost)' : '';
+
+    $('#carHeadline_'+carNr).html(carHeadline);
+
     carControls[carName].speedGauge = new steelseries.RadialBargraph('speedCanvas_' + carNr, {
         gaugeType: steelseries.GaugeType.TYPE4,
         size: 201,
@@ -93,12 +98,15 @@ var setupCarControlls = function (carNr) {
 
     carControls[carName].lastLaptimer = new steelseries.DisplaySingle('lastLaptimerCanvas_' + carNr, {
         width: 120,
-        height: 50
+        height: 50,
+        lcdColor: steelseries.LcdColor.YELLOW
+
     });
 
     carControls[carName].fastesLaptimer = new steelseries.DisplaySingle('fastesLaptimerCanvas_' + carNr, {
         width: 120,
-        height: 50
+        height: 50,
+        lcdColor: steelseries.LcdColor.RED
     });
 
 }
