@@ -166,6 +166,7 @@ void ServoCar::setCareOfFuel(boolean careOfFuel) {
 
 void ServoCar::setFullFuel(unsigned long fuelFull) {
   _fuelFull = fuelFull;
+  _fuel = fuelFull;
 }
 
 void ServoCar::setOnReserve(unsigned long onReserve) {

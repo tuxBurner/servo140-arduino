@@ -27,7 +27,7 @@ $(function () {
     $('#saveSettingsBtn').click(function() {
       var settingsStr =  readSettingsForCar(1) + ',' +readSettingsForCar(2);;
         pAjax(jsRoutes.controllers.ApplicationController.setSerialSettings(settingsStr), null, function (data) {
-            $('#settingsModal').modal('hide');
+            window.location.reload();
         }, function (data) {
         });
 
