@@ -1,0 +1,44 @@
+@(carNr: Integer)
+<div class="row">
+    <div class="col-md-12">
+        <h2>Car @carNr</h2>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-2">
+        <h3>Power</h3>
+    </div>
+    <div class="col-md-10">
+        <canvas id="speedCanvas_@carNr" width="100%" height="100%" class="center-block"/>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-2">
+        <h3>Fuel</h3>
+    </div>
+    <div class="col-md-10">
+        <canvas id="fuelCanvas_@carNr" width="100%" height="100%" class="center-block"/>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-4">
+        Lap
+    </div>
+    <div class="col-md-4">
+        Last
+    </div>
+    <div class="col-md-4">
+        Fastes
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-4">
+        <canvas id="laptimerCanvas_@carNr" width="100%" height="100%" class="center-block"/>
+    </div>
+    <div class="col-md-4">
+        <canvas id="lastLaptimerCanvas_@carNr" width="100%" height="100%" class="center-block"/>
+    </div>
+    <div class="col-md-4">
+        <canvas id="fastesLaptimerCanvas_@carNr" width="100%" height="100%" class="center-block"/>
+    </div>
+</div>
