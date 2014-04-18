@@ -60,10 +60,10 @@ var setupCarControlls = function (carNr) {
     var carName = 'car' + carNr;
     var carSettings = settings[carName];
 
-    var carHeadline='Car '+carNr;
-    carHeadline+=(settings[carName].ghostCar) ? '(Ghost)' : '';
+    var carHeadline = 'Car ' + carNr;
+    carHeadline += (settings[carName].ghostCar) ? '(Ghost)' : '';
 
-    $('#carHeadline_'+carNr).html(carHeadline);
+    $('#carHeadline_' + carNr).html(carHeadline);
 
     carControls[carName].speedGauge = new steelseries.RadialBargraph('speedCanvas_' + carNr, {
         gaugeType: steelseries.GaugeType.TYPE4,
@@ -76,6 +76,11 @@ var setupCarControlls = function (carNr) {
         lcdVisible: true,
         minValue: 0,
         maxValue: 250
+    });
+
+    carControls[carName].steerLeft = new steelseries.Led('ledSteerLeft_' + carNr);
+    carControls[carName].steerRight = new steelseries.Led('ledSteerRight_' + carNr, {
+        ledColor: steelseries.LedColor.GREEN_LED
     });
 
     carControls[carName].fuelGauge = new steelseries.LinearBargraph('fuelCanvas_' + carNr, {
@@ -120,6 +125,15 @@ var setupCarControlls = function (carNr) {
 var updateCarControlls = function (carNr, data, lapData) {
     var carName = 'car' + carNr;
     carControls[carName].speedGauge.setValue(data[0]);
+
+    if (data[1] == 1) {
+        carControls[carName].steerLeft.setLedOnOff(false);
+        carControls[carName].steerRight.setLedOnOff(true);
+    } else {
+        carControls[carName].steerLeft.setLedOnOff(true);
+        carControls[carName].steerRight.setLedOnOff(false);
+    }
+
     if (data[3] > 0) {
         // how many time is left
         var percentage = data[3] / (settings[carName].refillTime / 100);
@@ -129,7 +143,6 @@ var updateCarControlls = function (carNr, data, lapData) {
     } else {
         carControls[carName].fuelGauge.setValue(data[2]);
     }
-
 
 
     var lapTime = Number(lapData[0]);
@@ -142,7 +155,7 @@ var updateCarControlls = function (carNr, data, lapData) {
             carControls[carName].fastesLaptimer.setValue(carControls[carName].fastesLap / 1000);
         }
 
-        carControls[carName].lastLaptimer.setValue(lapTime  / 1000);
+        carControls[carName].lastLaptimer.setValue(lapTime / 1000);
     }
 }
 
