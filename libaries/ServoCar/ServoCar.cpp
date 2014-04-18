@@ -4,9 +4,8 @@
 #include "Arduino.h"
 #include "ServoCar.h"
 
-ServoCar::ServoCar(boolean ghostCar,boolean steerRight,int steerPin, int throttlePin, int motorPin1, int motorPin2) {
+ServoCar::ServoCar(boolean steerRight,int steerPin, int throttlePin, int motorPin1, int motorPin2) {
   // store the vars from the constructor to the private vars	
-	_ghostCar = ghostCar;
 	_steerPin = steerPin;
   _throttlePin = throttlePin;
   _motorPin1 = motorPin1;
@@ -132,6 +131,8 @@ void ServoCar::settingsToSerial() {
   Serial.print(_thrust);
   Serial.print(",");
   Serial.print(_steerRight);
+  Serial.print(",");
+  Serial.print(_careOfFuel);
   Serial.print(",");
   Serial.print(_fuelFull);
   Serial.print(",");

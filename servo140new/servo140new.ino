@@ -2,9 +2,9 @@
 #include <ServoTimer.h>
 
 // car1
-ServoCar car1(false,true,2,4,12,3);
+ServoCar car1(true,2,4,12,3);
 // car 2
-ServoCar car2(true,false,-1,-1,13,11);
+ServoCar car2(false,7,8,13,11);
 
 // timer
 ServoTimer timer1(A5);

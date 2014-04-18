@@ -26,6 +26,17 @@ object ApplicationController extends Controller {
     Ok;
   }
 
+  /**
+   * Sends the settings to the arduino
+   * @param settings
+   * @return
+   */
+  @JSRoute
+  def setSerialSettings(settings: String) = Action {
+    SerialReader.sendData(settings);
+    Ok;
+  }
+
   @JSRoute
   def joinRoomWs() = WebSocket.async[String] {
     request =>

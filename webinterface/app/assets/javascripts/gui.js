@@ -1,14 +1,21 @@
-var car1SpeedGauge,
-    car1FuelGauge,
-    car1Laptimer,
-    car2SpeedGauge,
-    car2FuelGauge,
-    car2Laptimer,
-    startLight1,
+var startLight1,
     startLight2,
     startLight3,
     startLight4,
     powerLight;
+
+var carControls = {
+    car1: {
+        speedGauge: null,
+        fuelGauge: null,
+        lapTimer: null
+    },
+    car2: {
+        speedGauge: null,
+        fuelGauge: null,
+        lapTimer: null
+    }
+}
 
 var gradColors = [ new steelseries.rgbaColor(0, 0, 200, 1),
     new steelseries.rgbaColor(0, 200, 0, 1),
@@ -22,7 +29,10 @@ var powerGrad = new steelseries.gradientWrapper(0, 250, gradSections, gradColors
 var fuelGrad = new steelseries.gradientWrapper(0, 10000, gradSections, gradColors);
 
 
-$(function () {
+/**
+ * Is called when new settings are coming from the backend
+ */
+var controllStart = function () {
 
     // startlight
     startLight1 = new steelseries.Led('startLight1Canvas');
@@ -35,19 +45,31 @@ $(function () {
     startLight4 = new steelseries.Led('startLight4Canvas', {
         ledColor: steelseries.LedColor.GREEN_LED
     });
-
     // power bulb
     powerLight = new steelseries.Led('powerCanvas', {
         width: 200,
         height: 200
     });
 
+    setupCarControlls(1);
+    setupCarControlls(2);
 
-    // car1 stuff
-    car1SpeedGauge = new steelseries.RadialBargraph('car1SpeedCanvas', {
+    controllReady = true;
+}
+
+/**
+ * Setups the car controll
+ * @param carNr
+ */
+var setupCarControlls = function (carNr) {
+
+    var carName = 'car' + carNr;
+    var carSettings = settings[carName];
+
+    carControls[carName].speedGauge = new steelseries.RadialBargraph(carName + 'SpeedCanvas', {
         gaugeType: steelseries.GaugeType.TYPE4,
         size: 201,
-        titleString: 'Car A',
+        titleString: 'Car ' + carNr,
         unitString: 'Power',
         valueGradient: powerGrad,
         useValueGradient: true,
@@ -57,59 +79,51 @@ $(function () {
         maxValue: 250
     });
 
-    car1FuelGauge = new steelseries.LinearBargraph('car1FuelCanvas', {
+    carControls[carName].fuelGauge = new steelseries.LinearBargraph(carName + 'FuelCanvas', {
         width: 320,
         height: 140,
         valueGradient: fuelGrad,
         useValueGradient: true,
-        titleString: "Car A",
-        unitString: "Fuel",
-        threshold: 1000,
+        titleString: 'Car ' + carName,
+        unitString: 'Fuel',
+        threshold: carSettings.fuelReserve,
         lcdVisible: true,
         minValue: 0,
-        maxValue: 10000
+        maxValue: carSettings.fuelFull
     });
 
-    car1Laptimer = new steelseries.DisplaySingle('car1LaptimerCanvas', {
+    carControls[carName].laptimer = new steelseries.DisplaySingle(carName + 'LaptimerCanvas', {
         width: 120,
         height: 50
     });
 
+}
 
-    // car2 stuff
-    car2SpeedGauge = new steelseries.RadialBargraph('car2SpeedCanvas', {
-        gaugeType: steelseries.GaugeType.TYPE4,
-        size: 201,
-        titleString: 'Car B',
-        unitString: 'Power',
-        valueGradient: powerGrad,
-        useValueGradient: true,
-        threshold: 50,
-        lcdVisible: true,
-        minValue: 0,
-        maxValue: 250
-    });
+var updateCarControlls = function(carNr,data,lapData) {
 
-    car2FuelGauge = new steelseries.LinearBargraph('car2FuelCanvas', {
-        width: 320,
-        height: 140,
-        valueGradient: fuelGrad,
-        useValueGradient: true,
-        titleString: "Car B",
-        unitString: "Fuel",
-        threshold: 1000,
-        lcdVisible: true,
-        minValue: 0,
-        maxValue: 10000
-    });
+    var carName = 'car' + carNr;
+    carControls[carName].speedGauge.setValue(data[0]);
 
-    car2Laptimer = new steelseries.DisplaySingle('car2LaptimerCanvas', {
-        width: 120,
-        height: 50
-    });
-});
+    carControls[carName].laptimer.setValue(lapData[0] / 1000);
 
-function onMessage(data) {
+
+
+    if (data[3] > 0) {
+        // how many time is left
+        var percentage = data[3] / (settings[carName].refillTime / 100);
+        // how much is fueld up
+        var value = settings[carName].fuelFull - ((settings[carName].fuelFull / 100) * percentage)
+        carControls[carName].fuelGauge.setValue(value);
+    } else {
+        carControls[carName].fuelGauge.setValue(data[2]);
+    }
+}
+
+/**
+ * is called when we receive data over websocket
+ * @param data
+ */
+var onMessage = function (data) {
     var data = data.split(',');
     if (data.length == 14) {
 
@@ -133,7 +147,7 @@ function onMessage(data) {
             startLight4.setLedOnOff(true);
         }
 
-        if(data[1] == 1) {
+        if (data[1] == 1) {
             powerLight.setLedColor(steelseries.LedColor.GREEN_LED);
             powerLight.blink(false);
             powerLight.setLedOnOff(true);
@@ -142,31 +156,7 @@ function onMessage(data) {
             powerLight.blink(true);
         }
 
-
-        car1SpeedGauge.setValue(data[2]);
-        car1FuelGauge.setValue(data[4]);
-        if(data[5] > 0) {
-            // how many time is left
-            var percentage = data[5] / (10000 / 100) ;
-
-            // how much is fueld up
-            var value = 10000 - ((10000 / 100) * percentage)
-            car1FuelGauge.setValue(value);
-        }
-
-        car1Laptimer.setValue(data[10] / 1000);
-        car2Laptimer.setValue(data[12] / 1000);
-        //console.error(data[10])
-
-        car2SpeedGauge.setValue(data[6]);
-        car2FuelGauge.setValue(data[8]);
-        if(data[9] > 0) {
-            // how many time is left
-            var percentage = data[9] / (10000 / 100) ;
-
-            // how much is fueld up
-            var value = 10000 - ((10000 / 100) * percentage)
-            car2FuelGauge.setValue(value);
-        }
+        updateCarControlls(1,data.slice(2,6),data.slice(10,11));
+        updateCarControlls(2,data.slice(6,10),data.slice(12,13));
     }
 }

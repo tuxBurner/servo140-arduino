@@ -8,7 +8,7 @@
 
 class ServoCar {
   public:
-   ServoCar(boolean ghostCar,boolean steerRight, int steerPin, int throttlePin, int motorPin1, int motorPin2);
+   ServoCar(boolean steerRight, int steerPin, int throttlePin, int motorPin1, int motorPin2);
 
    /**
    * Read the current data from the remote reciever
@@ -87,12 +87,12 @@ class ServoCar {
     boolean _break;    
     // fuel vars
     boolean _careOfFuel = false;
-    unsigned long _fuelFull = 10000;
+    unsigned long _fuelFull = 50000;
     long _fuel = _fuelFull;
     unsigned  long _carOnReserve = 1000;
     int _lastFuelRead = 0;
     // how long does it take to refill ?
-    int _lastFuelTimRead = 0;
+    unsigned long _lastFuelTimRead = 0;
     long _refillTime = 10000;
     long _refillTimer = 0;
 };

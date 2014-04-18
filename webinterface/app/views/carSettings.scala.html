@@ -1,0 +1,52 @@
+@(carNumber: Integer)
+<h1>Car @carNumber</h1>
+<div class="checkbox">
+    <label>
+        <input type="checkbox" id="steerRight_@carNumber">
+        Steer right
+    </label>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="checkbox">
+            <label>
+                <input type="checkbox" id="ghostCar_@carNumber">
+                Ghost Car
+            </label>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="form-group">
+            <label>Thrust</label>
+            <input type="range" min="0" max="255" step="1" id="thrust_@carNumber"/>
+            <span id="val_thrust_@carNumber">VAL</span>
+        </div>
+    </div>
+</div>
+
+
+<div class="checkbox">
+    <label>
+        <input type="checkbox" id="carForFuel_@carNumber">
+        Care for Fuel
+    </label>
+</div>
+
+<div class="form-group">
+    <label>Fuel</label>
+    <input type="range" min="20000" max="100000" step="1000" id="fuelFull_@carNumber"/>
+    <span id="val_fuelFull_@carNumber">VAL</span>
+</div>
+
+<div class="form-group">
+    <label>Reserve</label>
+    <input type="range" min="0" max="10000" step="100" id="fuelReserve_@carNumber"/>
+    <span id="val_fuelReserve_@carNumber">VAL</span>
+</div>
+
+<div class="form-group">
+    <label>Refilltime</label>
+    <input type="range" min="0" max="120" step="1" id="refillTime_@carNumber"/>
+    <span id="val_refillTime_@carNumber">VAL</span>
+</div>

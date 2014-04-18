@@ -1,14 +1,69 @@
 var websocket = null;
 var settings = null;
+var controllReady = false;
 
 $(function () {
     /**
-     * When the settings button is clicked we
+     * When the settings button is clicked we display the settings modal
      */
     $('#settingsBtn').click(function () {
+        setCarSettingsToModal('1');
+        setCarSettingsToModal('2');
+        $('#settingsModal').modal('show');
+    });
+
+
+    /**
+     * Update the value when changing the slider
+     */
+    $('[type="range"]').on("change", function () {
+        var thisId = $(this).attr('id');
+        $("#val_" + thisId).html($(this).val());
+    });
+
+    /**
+     * Take care of saving the settings to the arduino
+     */
+    $('#saveSettingsBtn').click(function() {
+      var settingsStr =  readSettingsForCar(1) + ',' +readSettingsForCar(2);;
+        pAjax(jsRoutes.controllers.ApplicationController.setSerialSettings(settingsStr), null, function (data) {
+            $('#settingsModal').modal('hide');
+        }, function (data) {
+        });
 
     });
 
+    websocketMagic();
+});
+
+/**
+ * Reads the settings for the given car
+ * @param carNr
+ * @returns {string}
+ */
+var readSettingsForCar = function(carNr) {
+    var carSttingsStr = "";
+    carSttingsStr+=($('#ghostCar_'+carNr).prop('checked')) ? '1' : '0';
+    carSttingsStr+=',';
+    carSttingsStr+=$('#thrust_'+carNr).val();
+    carSttingsStr+=',';
+    carSttingsStr+=($('#steerRight_'+carNr).prop('checked')) ? '1' : '0';
+    carSttingsStr+=',';
+    carSttingsStr+=($('#carForFuel_'+carNr).prop('checked')) ? '1' : '0';
+    carSttingsStr+=',';
+    carSttingsStr+=$('#fuelFull_'+carNr).val();
+    carSttingsStr+=',';
+    carSttingsStr+=$('#fuelReserve_'+carNr).val();
+    carSttingsStr+=',';
+    carSttingsStr+=$('#refillTime_'+carNr).val() * 1000;
+
+    return carSttingsStr;
+}
+
+/**
+ * This nurse takes care of the websocket :)
+ */
+var websocketMagic = function () {
     var wsUri = jsRoutes.controllers.ApplicationController.joinRoomWs().webSocketURL();
     websocket = new WebSocket(wsUri);
 
@@ -24,19 +79,20 @@ $(function () {
         // we received settings
         if (evt.data.indexOf("S") == 0) {
             parseSettingsToSettings(evt.data);
+
+            // start the controll
+            controllStart();
         } else {
-            onMessage(evt.data)
+            if (controllReady == true) {
+                onMessage(evt.data)
+            }
         }
     };
 
     websocket.onerror = function (evt) {
-        onError(evt)
-    };
-
-    function onError(evt) {
         websocket.close();
-    }
-});
+    };
+}
 
 /**
  * Tells the backend to get settings from the arduino
@@ -48,6 +104,35 @@ function callBackendForSettings() {
 }
 
 /**
+ * Sets the settings of the given car to the modal settings window
+ * @param carNr
+ */
+var setCarSettingsToModal = function (carNr) {
+    var carSettings = settings["car" + carNr];
+
+    $('#steerRight_' + carNr).prop("checked", carSettings.steerRight);
+    $('#ghostCar_' + carNr).prop("checked", carSettings.ghostCar);
+
+    setRangeVal('thrust_' + carNr, carSettings.thrust);
+
+    $('#carForFuel_' + carNr).prop("checked", carSettings.careForFuel);
+
+    setRangeVal('fuelFull_' + carNr, carSettings.fuelFull);
+    setRangeVal('fuelReserve_' + carNr, carSettings.fuelReserve);
+    setRangeVal('refillTime_' + carNr, carSettings.refillTime / 1000);
+}
+
+/**
+ * Sets the value for a range input
+ * @param id
+ * @param value
+ */
+var setRangeVal = function (id, value) {
+    $('#' + id).val(value);
+    $('#val_' + id).html(value);
+}
+
+/**
  * Parses the settings of the arduino to js settings
  */
 function parseSettingsToSettings(backendSettings) {
@@ -56,18 +141,20 @@ function parseSettingsToSettings(backendSettings) {
         car1: {
             ghostCar: split[1] == 1,
             thrust: split[2],
-            steerRight: split[3],
-            fuelFull: split[4],
-            fuelReserve: split[5],
-            refillTime: split[6]
+            steerRight: split[3] == 1,
+            careForFuel: split[4] == 1,
+            fuelFull: split[5],
+            fuelReserve: split[6],
+            refillTime: split[7]
         },
         car2: {
-            ghostCar: split[7] == 1,
-            thrust: split[8],
-            steerRight: split[9],
-            fuelFull: split[10],
-            fuelReserve: split[11],
-            refillTime: split[12]
+            ghostCar: split[8] == 1,
+            thrust: split[9],
+            steerRight: split[10] == 1,
+            careForFuel: split[11] == 1,
+            fuelFull: split[12],
+            fuelReserve: split[13],
+            refillTime: split[14]
         }
     }
 }
