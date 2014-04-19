@@ -72,12 +72,6 @@ void ServoCar::readData() {
 
 void ServoCar::controllMotor(boolean powerOn) {
 
-  if(_steerRight == true) {
-    digitalWrite(_motorPin1, HIGH);
-  } else {
-    digitalWrite(_motorPin1, LOW);
-  }
-
   // take care of the fuel handling
   if(powerOn == true && _ghostCar == false && _careOfFuel == true) {
     unsigned long current = millis();
@@ -108,9 +102,16 @@ void ServoCar::controllMotor(boolean powerOn) {
   }
 
   if(powerOn == true && _fuel >= 0) {
-    analogWrite(_motorPin2,_thrust);
+    if(_steerRight == true) {
+      digitalWrite(_motorPin1, LOW);
+      analogWrite(_motorPin2,_thrust);
+    } else {
+      digitalWrite(_motorPin2, LOW);
+      analogWrite(_motorPin1,_thrust);
+    }
   } else {
     analogWrite(_motorPin2,0);
+    analogWrite(_motorPin1,0);
   }
 }
 
