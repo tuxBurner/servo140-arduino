@@ -16,14 +16,14 @@ void ServoTimer::doTiming(boolean powerOn) {
   }
 
   unsigned long diff = current - _lastReadedTime;
-  int val = analogRead(_timePin);
+  int sensorVal = digitalRead(_timePin);
   _lapTime+= diff;
 
   _serialData=""; //_lapTime;
   _serialData+=_lapTime;
   _serialData+=",";
   
-  if(val < 100) {
+  if(sensorVal == LOW) {
     if(current - _btnDebounce > 500) {
       _btnDebounce = current;
       _lapTime = 0;
