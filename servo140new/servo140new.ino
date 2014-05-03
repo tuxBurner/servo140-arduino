@@ -2,13 +2,13 @@
 #include <ServoTimer.h>
 
 // car1
-ServoCar car1(true,2,4,3,5);
+ServoCar car1(true,8,7,9,6);
 // car 2
-ServoCar car2(false,7,8,6,9);
+ServoCar car2(false,12,13,10,11);
 
-// timer
-ServoTimer timer1(A5);
-ServoTimer timer2(A4);
+// timers
+ServoTimer timer1(2);
+ServoTimer timer2(3);
 
 // start light pins
 const int datapin = 12; 
@@ -54,6 +54,10 @@ void setup()
 
   // turn on power led
   shiftWrite(powerLedPos, HIGH);
+  
+  // attach the interrupt methods for the timer
+  attachInterrupt(0, handleTimer1, LOW);
+  attachInterrupt(1, handleTimer2, LOW);
 }
 
 void loop()
@@ -156,7 +160,7 @@ void setCarValues(ServoCar &car, int fromIndex) {
 }
 
 /**
- * Gets the value from the serialInput
+ * Gets the value from the serialInput by spliiting it by ,
  */
 String getValueFromSerialInput(String data,  int index)
 {
@@ -175,6 +179,21 @@ String getValueFromSerialInput(String data,  int index)
   }
 
   return found>index ? data.substring(strIndex[0], strIndex[1]) : "";
+}
+
+
+/**
+* interrupt method for timer 1
+*/
+void handleTimer1() {
+  timer1.handleInterrupt();
+}
+
+/**
+* interrupt method for timer 2
+*/
+void handleTimer2() {
+  timer2.handleInterrupt();
 }
 
 /**

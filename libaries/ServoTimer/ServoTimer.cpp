@@ -1,10 +1,13 @@
 #include "Arduino.h"
 #include "ServoTimer.h"
 
-ServoTimer::ServoTimer(int analogTimerPin) {
-	_timePin = analogTimerPin;
+ServoTimer::ServoTimer(int timerPin) {
+  _timePin = timerPin;
+  pinMode(_timePin, INPUT_PULLUP);
+}
 
-    pinMode(_timePin, INPUT_PULLUP);
+void ServoTimer::handleInterrupt() {
+  _lapCount = true;
 }
 
 void ServoTimer::doTiming(boolean powerOn) {
@@ -24,11 +27,10 @@ void ServoTimer::doTiming(boolean powerOn) {
   _serialData+=",";
   
 
-  if(sensorVal == LOW) {
+  if(_lapCount == true) {
     if(current - _btnDebounce > 500) {
       _btnDebounce = current;
       _lapTime = 0;
-      _lapCount = true;
     }
   }
   _serialData+=_lapCount;

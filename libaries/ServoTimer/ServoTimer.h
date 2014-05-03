@@ -8,18 +8,25 @@
 
 class ServoTimer {
   public:
-   ServoTimer(int analogTimerPin);
+    /**
+    * Constructor
+    */
+    ServoTimer(int timerPin);
 
-   /**
-   * does the timing measuring
-   */
-   void doTiming(boolean powerOn);
+    /**
+    * does the timing measuring
+    */
+    void doTiming(boolean powerOn);
 
-   /**
-   * prints the data to serial
-   */
-   void writeToSerial();
-
+    /**
+    * prints the data to serial
+    */
+    void writeToSerial();
+    
+    /**
+    * is called when an interrupt happens on the pin for the timer
+    */
+    void handleInterrupt();
    
   private:
     int _timePin = 0;
