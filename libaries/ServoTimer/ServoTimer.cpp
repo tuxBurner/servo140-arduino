@@ -23,6 +23,7 @@ void ServoTimer::doTiming(boolean powerOn) {
   _serialData+=_lapTime;
   _serialData+=",";
   
+
   if(sensorVal == LOW) {
     if(current - _btnDebounce > 500) {
       _btnDebounce = current;
