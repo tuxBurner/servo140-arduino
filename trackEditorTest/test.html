@@ -1,0 +1,177 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <style>
+      body {
+        margin: 0px;
+        padding: 0px;
+      }
+    </style>
+  </head>
+  <body>
+    <button onclick="addPart(75);">Std Gerade</button>
+    <button onclick="addPart(150);">Doppel Gerade</button>
+    <button onclick="addPart(25);">Drittel Gerade</button>
+    <button onclick="addPart(18.75);">Viertel Gerade</button>
+    <hr />
+    <button href="#" onclick="rotatePart(false)">Rotate Left</button>
+    <button href="#" onclick="rotatePart(true)">Rotate Right</button>
+
+    <div id="container"></div>
+    <script src="http://d3lp1msu2r81bx.cloudfront.net/kjs/js/lib/kinetic-v5.0.2.min.js"></script>
+    <script defer="defer">
+      
+      
+      // avaible partTypes
+      var partTypes = {
+        straight : {
+          lenght: 75,
+          height: 50
+        },
+        bend90 : {
+
+        } 
+      };
+
+      // list of parts avaible
+      var parts = Array();
+
+      // the currently selected part
+      var currentSelectedPart = null;
+
+      // rotates the current selected part
+      var rotatePart = function(rotateRight) {
+        if(currentSelectedPart == null) {
+          return;
+        } 
+
+        var currentRotation = currentSelectedPart.getRotation();
+        if(rotateRight == true) {
+          currentRotation+=45; 
+          if(currentRotation == 360) {
+            currentRotation = 0;
+          }
+        } else {
+          if(currentRotation == 0) {
+            currentRotation = 360;
+          }
+          currentRotation-=45;
+        }
+        currentSelectedPart.setRotation(currentRotation);
+
+        layer.draw();
+      }
+
+      // function for adding a new part to the tracke
+      var addPart = function(length) {
+        
+        var group = new Kinetic.Group({
+          x: 0,
+          y: 0,
+          rotation: 0,
+          draggable: true,
+          id: 'part_'+parts.length,
+          name: 'trackPart'
+        });
+
+        var rect = new Kinetic.Rect({
+          x: 0,
+          y: 0,
+          width: length,
+          height: 50,
+          fill: 'green',
+          stroke: 'black',
+          strokeWidth: 1                    
+        });
+
+        group.add(rect);
+
+        var circle = new Kinetic.Circle({
+          x: 0,
+          y: 0,
+          radius: 10,
+          fill: 'red',
+          stroke: 'black',
+          strokeWidth: 1
+        });
+        circle.partPosX = 0;
+        group.add(circle);
+
+        var circle2 = new Kinetic.Circle({
+          x: 0+length,
+          y: 0,
+          radius: 10,
+          fill: 'blue',
+          stroke: 'black',
+          strokeWidth: 1
+        });
+        circle2.partPosX = length;
+        group.add(circle2);
+
+        group.detctionCirles =  [ circle, circle2 ];
+        layer.add(group);
+        parts.push(group);
+
+        group.setX((stage.getWidth() / 2)-stage.getAbsolutePosition().x);
+        group.setY((stage.getHeight() / 2)-stage.getAbsolutePosition().y);  
+        currentSelectedPart = group;
+
+        layer.draw();
+
+        group.on('dragend', function() {
+          if(parts.length == 1) {
+            return;
+          } 
+          for(h=0; h < parts.length; h++) {
+            var part = parts[h];
+            if(part.getId() != this.getId()) {
+              for(i=0; i < 2; i++) {
+                var circlPos = this.detctionCirles[i].getAbsolutePosition();
+                for(j=0; j < 2; j++) {
+                  var partPos = part.detctionCirles[j].getAbsolutePosition();
+                  var distanceX = circlPos.x - partPos.x;
+                  var distanceY = circlPos.y - partPos.y;
+                  var distance = Math.sqrt((distanceX * distanceX) + (distanceY * distanceY));
+                  // lets attach the part to the other one
+                  if(distance <= 15) {
+                    this.offsetX(this.detctionCirles[i].partPosX);
+                    this.setRotation(part.getRotation());
+                    this.setX(partPos.x-stage.getAbsolutePosition().x);
+                    this.setY(partPos.y-stage.getAbsolutePosition().y);                    
+                  }
+                }
+              }
+            }
+          }
+          layer.draw();
+        });
+
+       group.on('click',function() {
+         currentSelectedPart = this;
+       });
+      }
+
+      var stage = new Kinetic.Stage({
+        container: 'container',
+        width:  window.innerWidth,
+        height: window.innerHeight-100,
+        draggable: true
+      });
+
+      var layer = new Kinetic.Layer();
+      addPart(75);
+          
+      // add the layer to the stage
+      stage.add(layer);
+
+      /*var zoom = function(e) {
+        var zoomAmount = e.wheelDeltaY*0.001;
+        var scale = layer.getScale().y+zoomAmount;
+        layer.setScale({x: scale, y: scale});
+        console.error(layer.getScale());
+        layer.draw();
+      }
+      document.addEventListener("mousewheel", zoom, false)*/
+    </script>
+  </body>
+</html>
