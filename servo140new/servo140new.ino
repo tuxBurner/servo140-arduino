@@ -46,7 +46,7 @@ void setup()
    *  setup start light pins
    */
   FastLED.addLeds<WS2812B, ledsPin,GRB>(leds, numLeds);
-  turnPowerLedsOn();
+  turnPowerLedsOn(CRGB::Green);
 
   // attach the interrupt methods for the timer
   attachInterrupt(0, handleTimer1, LOW);
@@ -206,6 +206,7 @@ void startLightControl() {
   if(currStartLight == 0 && lastMillis == 0) {
     // set the last milliseconds
     lastMillis = millis();
+      turnPowerLedsOn(CRGB::Black);
   }
 
   unsigned long currMillis = millis();  
@@ -222,7 +223,7 @@ void startLightControl() {
       currStartLight++;
     } 
     else {
-      turnPowerLedsOn();
+      turnPowerLedsOn(CRGB::Green);
       // reset last millis
       lastMillis = 0;
       // no start light
@@ -236,9 +237,9 @@ void startLightControl() {
 /**
  * Turns the leds green which marks that the power is on
  */
-void turnPowerLedsOn() {
+void turnPowerLedsOn(CRGB color) {
   for(int index = numOfLights; index >= 0; index--) {
-    leds[index] = CRGB::Green;
+    leds[index] = color;
   }
   FastLED.show();
 }
