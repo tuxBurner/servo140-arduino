@@ -1,5 +1,6 @@
 #include <ServoCar.h>
 #include <ServoTimer.h>
+#include <FastLED.h>
 
 // car1
 ServoCar car1(true,8,7,9,6);
@@ -11,11 +12,10 @@ ServoTimer timer1(2);
 ServoTimer timer2(3);
 
 // start light pins
-const int datapin = 12; 
-const int clockpin = 6;
-const int latchpin = 10;
+const int ledsPin = 4;
+const int numLeds = 4;
+CRGB leds[numLeds];
 // data of the start light
-byte startLightData = 0;
 const int startLightDelayTime = 750;
 const int numOfLights=3;
 /**
@@ -24,8 +24,7 @@ const int numOfLights=3;
 int currStartLight = -1;
 // flag if the power is on or not
 boolean powerOn = true;
-// const which pin the power led in on the ic
-const int powerLedPos = 5;
+
 /**
  * the last readed millis
  */
@@ -35,8 +34,6 @@ unsigned long lastMillis = 0;
  * string which stores the data of the serial input
  */
 String serialInputStr;
-
-
 
 void setup()
 {
@@ -48,13 +45,9 @@ void setup()
   /**
    *  setup start light pins
    */
-  pinMode(datapin, OUTPUT);
-  pinMode(clockpin, OUTPUT);  
-  pinMode(latchpin, OUTPUT);
+  FastLED.addLeds<WS2812B, ledsPin,GRB>(leds, numLeds);
+  turnPowerLedsOn();
 
-  // turn on power led
-  shiftWrite(powerLedPos, HIGH);
-  
   // attach the interrupt methods for the timer
   attachInterrupt(0, handleTimer1, LOW);
   attachInterrupt(1, handleTimer2, LOW);
@@ -97,7 +90,10 @@ void loop()
     // power of the lane
     if(powerOn == true) {
       powerOn = false;
-      shiftWrite(powerLedPos, LOW);
+      for(int index = numOfLights; index >= 0; index--) {
+        leds[index] = CRGB::Blue;
+      }
+      FastLED.show();
       delay(500);
       return;
     } 
@@ -167,7 +163,7 @@ String getValueFromSerialInput(String data,  int index)
   char separator = ',';
   int found = 0;
   int strIndex[] = {
-    0, -1                    };
+    0, -1                      };
   int maxIndex = data.length()-1;
 
   for(int i=0; i<=maxIndex && found<=index; i++){
@@ -183,15 +179,15 @@ String getValueFromSerialInput(String data,  int index)
 
 
 /**
-* interrupt method for timer 1
-*/
+ * interrupt method for timer 1
+ */
 void handleTimer1() {
   timer1.handleInterrupt();
 }
 
 /**
-* interrupt method for timer 2
-*/
+ * interrupt method for timer 2
+ */
 void handleTimer2() {
   timer2.handleInterrupt();
 }
@@ -218,37 +214,33 @@ void startLightControl() {
   if(currMillis - lastMillis > startLightDelayTime) {
     if(currStartLight <= numOfLights) {
       // turn on the light
-      shiftWrite(currStartLight, HIGH); 
+      leds[currStartLight] = CRGB::Red;
+      FastLED.show();
       // reset the clock timer
       lastMillis = millis();
       // increment to next light
       currStartLight++;
     } 
     else {
-      // turn of the lights
-      for(int index = numOfLights; index >= 0; index--) {
-        shiftWrite(index, LOW);
-      }
+      turnPowerLedsOn();
       // reset last millis
       lastMillis = 0;
       // no start light
       currStartLight = -1;
       // turn the power on
       powerOn = true;
-      // turn on the power led
-      shiftWrite(powerLedPos, HIGH);
     }  
   }  
 }
 
 /**
- * write the data to the start light 
+ * Turns the leds green which marks that the power is on
  */
-void shiftWrite(int desiredPin, boolean desiredState) {
-  bitWrite(startLightData,desiredPin,desiredState);
-  shiftOut(datapin, clockpin, MSBFIRST, startLightData);
-  digitalWrite(latchpin, HIGH);
-  digitalWrite(latchpin, LOW);
+void turnPowerLedsOn() {
+  for(int index = numOfLights; index >= 0; index--) {
+    leds[index] = CRGB::Green;
+  }
+  FastLED.show();
 }
 
 
