@@ -53,10 +53,17 @@ void ServoCar::readData() {
   unsigned long throttleValue = pulseIn(_throttlePin, HIGH, 20000); 
   _thrust = throttleValue - _initThrottleVale;
   
-  // reset if break is hit for debug
-  if(_thrust < -300) {
-  	_break = true;
+  // if break is hit we set this to break
+  if(_thrust < -300 && _break == false) {
+    unsigned long current = millis();
+    if(_breakHitStart == 0) {
+      _breakHitStart = current;
+    }
+    if((current - _breakHitStart) >= 125) {
+  	  _break = true;
+    }
   } else {
+    _breakHitStart = 0;
   	_break = false;
   }
   
@@ -75,6 +82,8 @@ void ServoCar::controllMotor(boolean powerOn) {
   // take care of the fuel handling
   if(powerOn == true && _ghostCar == false && _careOfFuel == true) {
     unsigned long current = millis();
+
+    // evry fourth seconds remove the current thrust from the fuel
     if(_lastFuelRead == 0 || current - _lastFuelRead >= 250) {
       _lastFuelRead = current;
       _fuel = _fuel -_thrust;
