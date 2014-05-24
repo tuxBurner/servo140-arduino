@@ -1,3 +1,10 @@
+var currentLight = null;
+var currentPowerStade = null;
+
+var beepSound = new Audio('assets/sounds/beep.wav');
+var goSound = new Audio('assets/sounds/go.wav');
+var powerOffSound = new Audio('assets/sounds/powerOff.wav');
+
 var startLight1,
     startLight2,
     startLight3,
@@ -167,33 +174,45 @@ var onMessage = function (data) {
     var data = data.split(',');
     if (data.length == 14) {
 
-        if (data[0] == -1) {
-            startLight1.setLedOnOff(false);
-            startLight2.setLedOnOff(false);
-            startLight3.setLedOnOff(false);
-            startLight4.setLedOnOff(false);
+        if (currentLight != data[0]) {
+            currentLight = data[0];
+            if (data[0] == -1) {
+                startLight1.setLedOnOff(false);
+                startLight2.setLedOnOff(false);
+                startLight3.setLedOnOff(false);
+                startLight4.setLedOnOff(false);
+                goSound.play();
+            }
+
+            if (data[0] == 1) {
+                startLight1.setLedOnOff(true);
+                beepSound.play();
+            }
+            if (data[0] == 2) {
+                startLight2.setLedOnOff(true);
+                beepSound.play();
+            }
+            if (data[0] == 3) {
+                startLight3.setLedOnOff(true);
+                beepSound.play();
+            }
+            if (data[0] == 4) {
+                startLight4.setLedOnOff(true);
+                beepSound.play();
+            }
         }
 
-        if (data[0] == 1) {
-            startLight1.setLedOnOff(true);
-        }
-        if (data[0] == 2) {
-            startLight2.setLedOnOff(true);
-        }
-        if (data[0] == 3) {
-            startLight3.setLedOnOff(true);
-        }
-        if (data[0] == 4) {
-            startLight4.setLedOnOff(true);
-        }
-
-        if (data[1] == 1) {
-            powerLight.setLedColor(steelseries.LedColor.GREEN_LED);
-            powerLight.blink(false);
-            powerLight.setLedOnOff(true);
-        } else {
-            powerLight.setLedColor(steelseries.LedColor.RED_LED);
-            powerLight.blink(true);
+        if (currentPowerStade != data[1]) {
+            currentPowerStade = data[1];
+            if (data[1] == 1) {
+                powerLight.setLedColor(steelseries.LedColor.GREEN_LED);
+                powerLight.blink(false);
+                powerLight.setLedOnOff(true);
+            } else {
+                powerOffSound.play();
+                powerLight.setLedColor(steelseries.LedColor.RED_LED);
+                powerLight.blink(true);
+            }
         }
 
         updateCarControlls(1, data.slice(2, 6), data.slice(10, 12));

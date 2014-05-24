@@ -78,13 +78,14 @@ class ServoCar {
     int _throttlePin;
     int _motorPin1;
     int _motorPin2;
-    int _thrust;    
+    int _thrust;        
     // is it a ghost car 
     boolean _ghostCar;
     // steer right or left
     boolean _steerRight;
     // hit the break
-    boolean _break;    
+    boolean _break; 
+    unsigned long _breakHitStart = 0;   
     // fuel vars
     boolean _careOfFuel = false;
     unsigned long _fuelFull = 50000;
