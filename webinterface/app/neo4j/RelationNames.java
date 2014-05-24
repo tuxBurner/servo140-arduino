@@ -1,4 +1,4 @@
-package neo4j.models;
+package neo4j;
 
 /**
  * Created by tuxburner on 5/24/14.

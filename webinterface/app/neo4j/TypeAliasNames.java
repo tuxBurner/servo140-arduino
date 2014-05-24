@@ -5,7 +5,14 @@ package neo4j;
  */
 public class TypeAliasNames {
 
-  public static final String USER = "user";
+    public static final String CAR = "car";
 
-  public static final String TOKEN = "token";
+    public static final String DRIVER = "driver";
+
+    public static final String RACE = "race";
+
+    public static final String RACE_DRIVER_CAR = "raceDriverCar";
+
+    public static final String TRACK = "track";
+
 }
