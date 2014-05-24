@@ -9,10 +9,11 @@
     </style>
   </head>
   <body>
-    <button onclick="addPart(75);">Std Gerade</button>
-    <button onclick="addPart(150);">Doppel Gerade</button>
-    <button onclick="addPart(25);">Drittel Gerade</button>
-    <button onclick="addPart(18.75);">Viertel Gerade</button>
+    <button onclick="addPart('straight');">Std Gerade</button>
+    <button onclick="addPart('dblStraight');">Doppel Gerade</button>
+    <button onclick="addPart('thirdStraight');">Drittel Gerade</button>
+    <button onclick="addPart('fourthStraight');">Viertel Gerade</button>
+    <button onclick="addPart('curve90');">Kurve 90°</button>
     <hr />
     <button href="#" onclick="rotatePart(false)">Rotate Left</button>
     <button href="#" onclick="rotatePart(true)">Rotate Right</button>
@@ -22,14 +23,51 @@
     <script defer="defer">
       
       
+      // ratio for calc is 4.62962963 * cm 
       // avaible partTypes
       var partTypes = {
         straight : {
-          lenght: 75,
-          height: 50
+          width: 100,
+          height: 66.66,
+          connections: [
+            {x: 0,
+            y: 0,
+            acceptedRotation: 0
+            },{
+              x: 100,
+              y: 0,
+            acceptedRotation: 0
+            }
+          ]  
         },
-        bend90 : {
-
+        dblStraight : {
+          width: 200,
+          height: 66.66,
+          connections: [
+            {x: 0,
+            y: 0,
+            acceptedRotation: 0
+            },{
+              x: 200,
+              y: 0,
+            acceptedRotation: 0
+            }
+          ]  
+        },
+        curve90 : {
+          width: 112.96,
+          height: 112.96,
+          connections: [
+            {
+            x: 0,
+            y: 0,
+            acceptedRotation: 0
+            },{
+            x: 112.96,
+            y: 112.96,
+            acceptedRotation: 90
+           }
+           ]
         } 
       };
 
@@ -45,7 +83,17 @@
           return;
         } 
 
-        var currentRotation = currentSelectedPart.getRotation();
+        var currentRotation = calcRotation(rotateRight,currentSelectedPart.getRotation());
+        currentSelectedPart.setRotation(currentRotation);
+
+        for(i=0; i < currentSelectedPart.detectionCirles.length; i++) {
+          currentSelectedPart.detectionCirles[i].acceptedRotation = calcRotation(rotateRight,currentSelectedPart.detectionCirles[i].acceptedRotation);
+        }
+
+        layer.draw();
+      }
+
+      var calcRotation = function(rotateRight,currentRotation) {
         if(rotateRight == true) {
           currentRotation+=45; 
           if(currentRotation == 360) {
@@ -57,13 +105,18 @@
           }
           currentRotation-=45;
         }
-        currentSelectedPart.setRotation(currentRotation);
 
-        layer.draw();
+        return currentRotation;
       }
 
       // function for adding a new part to the tracke
-      var addPart = function(length) {
+      var addPart = function(name) {
+
+        if(partTypes[name] == null) {
+          return;
+        }
+
+        var partType = partTypes[name];
         
         var group = new Kinetic.Group({
           x: 0,
@@ -73,42 +126,55 @@
           id: 'part_'+parts.length,
           name: 'trackPart'
         });
+        group.detectionCirles = new Array();
 
-        var rect = new Kinetic.Rect({
+        /*var rect = new Kinetic.Rect({
           x: 0,
           y: 0,
-          width: length,
-          height: 50,
+          width: partType.width,
+          height: partType.height,
           fill: 'green',
           stroke: 'black',
           strokeWidth: 1                    
         });
+        group.add(rect);*/
 
-        group.add(rect);
-
-        var circle = new Kinetic.Circle({
+      var imageObj = new Image();
+      imageObj.onload = function() {
+        var yoda = new Kinetic.Image({
           x: 0,
           y: 0,
-          radius: 10,
-          fill: 'red',
-          stroke: 'black',
-          strokeWidth: 1
+          image: imageObj,
+          width: partType.width,
+          height: partType.height
         });
-        circle.partPosX = 0;
-        group.add(circle);
 
-        var circle2 = new Kinetic.Circle({
-          x: 0+length,
-          y: 0,
-          radius: 10,
-          fill: 'blue',
-          stroke: 'black',
-          strokeWidth: 1
-        });
-        circle2.partPosX = length;
-        group.add(circle2);
+        // add the shape to the layer
+        group.add(yoda);
+        layer.draw();
 
-        group.detctionCirles =  [ circle, circle2 ];
+        // add the layer to the stage
+        //stage.add(layer);
+      };
+      imageObj.src = name+'.png';
+
+        
+        // add the connection points
+        for(i=0; i< partType.connections.length; i++) {
+          var circle = new Kinetic.Circle({
+            x: partType.connections[i].x,
+            y: partType.connections[i].y,
+            radius: 10,
+            fill: 'red',
+            stroke: 'black',
+            strokeWidth: 1
+          });
+          circle.acceptedRotation = partType.connections[i].acceptedRotation; 
+          //circle.partPosX = 0;
+          group.add(circle);
+          group.detectionCirles.push(circle);
+        }
+
         layer.add(group);
         parts.push(group);
 
@@ -125,17 +191,23 @@
           for(h=0; h < parts.length; h++) {
             var part = parts[h];
             if(part.getId() != this.getId()) {
-              for(i=0; i < 2; i++) {
-                var circlPos = this.detctionCirles[i].getAbsolutePosition();
-                for(j=0; j < 2; j++) {
-                  var partPos = part.detctionCirles[j].getAbsolutePosition();
+              for(i=0; i < this.detectionCirles.length; i++) {
+                var circlPos = this.detectionCirles[i].getAbsolutePosition();
+                for(j=0; j < part.detectionCirles.length; j++) {
+                  var partPos = part.detectionCirles[j].getAbsolutePosition();
+                  
+                  // check if the current circle accepts the rotation
+                  //if(this.detectionCirles[i].acceptedRotation != part.detectionCirles[j].acceptedRotation) {
+                  //  break;
+                  //}
+
                   var distanceX = circlPos.x - partPos.x;
                   var distanceY = circlPos.y - partPos.y;
                   var distance = Math.sqrt((distanceX * distanceX) + (distanceY * distanceY));
                   // lets attach the part to the other one
                   if(distance <= 15) {
-                    this.offsetX(this.detctionCirles[i].partPosX);
-                    this.setRotation(part.getRotation());
+                    this.offsetX(this.detectionCirles[i].getX());
+                    //this.setRotation(part.getRotation());
                     this.setX(partPos.x-stage.getAbsolutePosition().x);
                     this.setY(partPos.y-stage.getAbsolutePosition().y);                    
                   }
@@ -163,6 +235,7 @@
           
       // add the layer to the stage
       stage.add(layer);
+
 
       /*var zoom = function(e) {
         var zoomAmount = e.wheelDeltaY*0.001;
