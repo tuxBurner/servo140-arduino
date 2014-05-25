@@ -68,6 +68,10 @@ object DataController extends Controller {
     Ok(views.html.data.addDriver(Forms.DriverForm))
   }
 
+  /**
+   * Adds the driver to the database
+   * @return
+   */
   @JSRoute
   def addDriver = Action {
     implicit request =>
@@ -87,6 +91,11 @@ object DataController extends Controller {
       )
   }
 
+  /**
+   * Saves the base64 encoded image with the id of the node to the filesystem
+   * @param node
+   * @param imageData
+   */
   def saveImageData(node:AbstractNeoNode, imageData: String) {
     if(node.id == null) {
       return
@@ -97,7 +106,7 @@ object DataController extends Controller {
     }
 
     val imageDataBytes = Base64.decodeBase64(imageData);
-    FileUtils.writeByteArrayToFile(new File("target/"+node.id),imageDataBytes,false);
+    FileUtils.writeByteArrayToFile(new File("dataImages/"+node.id),imageDataBytes,false);
   }
 
 }
