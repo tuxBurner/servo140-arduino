@@ -1,0 +1,45 @@
+@()(implicit request: play.api.mvc.Request[play.api.mvc.AnyContent])
+
+    @script = {
+        <script type='text/javascript' src='@routes.Assets.at("javascripts/dataPage.js")'></script>
+    }
+
+@main(Messages("dataview"), script) {
+    @twbs.pageHeader {
+        @Messages("dataHeadline")
+    }
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs" id="dataTab">
+        <li class="active"><a href="#drivers" data-toggle="tab">@Messages("data.tab.driver")</a></li>
+        <li><a href="#profile" data-toggle="tab">Profile</a></li>
+        <li><a href="#messages" data-toggle="tab">Messages</a></li>
+        <li><a href="#settings" data-toggle="tab">Settings</a></li>
+    </ul>
+
+    <!-- Tab panes -->
+    <div class="tab-content">
+        <div class="tab-pane active" id="drivers">Driver</div>
+        <div class="tab-pane" id="profile">profile</div>
+        <div class="tab-pane" id="messages">...</div>
+        <div class="tab-pane" id="settings">...</div>
+    </div>
+
+    <div class="modal fade" id="dataModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="myModalLabel">Settings</h4>
+                </div>
+                <div class="modal-body" id="dataModalContent">
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="dataModalSaveBtn">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+}

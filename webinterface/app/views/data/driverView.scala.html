@@ -1,0 +1,19 @@
+@(drivers: List[neo4j.models.Driver])
+
+<div class="row">
+    <div class="col-md-12">
+        @twbs.buttons.buttonPrimary("button",'id->"driverAddBtn") {
+            @Messages("driver.add")
+        }
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+    @if(drivers.isEmpty == true) {
+        @Messages("driver.none")
+    } else {
+        @drivers
+    }
+    </div>
+</div>

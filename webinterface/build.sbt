@@ -4,7 +4,7 @@ version := "1.0-SNAPSHOT"
 
 libraryDependencies ++= Seq(
   cache,
-  "com.github.tuxBurner" %% "play-twbs3" % "0.1",
+  "com.github.tuxBurner" %% "play-twbs3" % "0.2",
   "org.webjars" %% "webjars-play" % "2.2.1-2",
   "org.webjars" % "bootstrap" % "3.1.0",
   "org.webjars" % "jquery" % "1.11.0-1",

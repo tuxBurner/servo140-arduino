@@ -10,6 +10,12 @@ POST        /powerOff                         controllers.ApplicationController.
 POST        /startLightSeq                    controllers.ApplicationController.startLightSeq
 GET         /ws                               controllers.ApplicationController.joinRoomWs
 
+# Data Stuff
+GET         /data                             controllers.DataController.mainDataView
+GET         /data/drivers                     controllers.DataController.listDrivers
+GET         /data/drivers/add                 controllers.DataController.displayAddDriver
+POST        /data/drivers/add                 controllers.DataController.addDriver
+
 
 # Javascript routing
 GET         /assets/javascripts/routes        controllers.ApplicationController.jsRoutes

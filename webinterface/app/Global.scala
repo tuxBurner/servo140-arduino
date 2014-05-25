@@ -10,7 +10,11 @@ object Global extends GlobalSettings {
 
 
   override def onStart(app: Application) {
-    SerialReader.openConnection();
+    try {
+      SerialReader.openConnection();
+    } catch {
+      case _ => Logger.error("An error happened while connecting to the Arduino");
+    }
 
   }
 
