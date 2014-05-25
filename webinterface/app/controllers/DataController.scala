@@ -3,9 +3,13 @@ package controllers
 import play.api.mvc.{Action, Controller}
 import neo4j.Neo4JServiceProvider
 import org.springframework.data.domain.Sort
-import neo4j.models.Track
+import neo4j.models.{AbstractNeoNode, Driver, Track}
 import plugins.jsAnnotations.JSRoute
 import scala.collection.JavaConverters._
+import play.api.i18n.Messages
+import org.apache.commons.codec.binary.Base64
+import org.apache.commons.io.FileUtils
+import java.io.File
 
 /**
  * Created by tuxburner on 5/24/14.
@@ -50,7 +54,7 @@ object DataController extends Controller {
    * @return
    */
   @JSRoute
-  def listDrivers = Action {
+  def listDrivers = Neo4jTransactionAction {
     val drivers = Neo4JServiceProvider.get().driverRepo.findAll(new Sort("name")).iterator().asScala.toList;
     Ok(views.html.data.driverView(drivers))
   }
@@ -61,12 +65,39 @@ object DataController extends Controller {
    */
   @JSRoute
   def displayAddDriver = Action {
-    Ok(views.html.data.addDriver())
+    Ok(views.html.data.addDriver(Forms.DriverForm))
   }
 
   @JSRoute
   def addDriver = Action {
-    Redirect(routes.DataController.mainDataView).flashing(BaseController.FLASH_SUCCESS_KEY -> "Driver added.");
+    implicit request =>
+
+      Forms.DriverForm.bindFromRequest.fold(
+        formWithErrors => {
+          Redirect(routes.DataController.mainDataView).flashing(BaseController.FLASH_ERROR_KEY -> "Could not add driver");
+        },
+        value => {
+          val driverForm = Forms.DriverForm.bindFromRequest()
+          val neoDriver = new neo4j.models.Driver();
+          neoDriver.name = driverForm.get.name;
+          val neoDriverSaved = Neo4JServiceProvider.get().driverRepo.save(neoDriver);
+          saveImageData(neoDriverSaved,driverForm.get.imageData);
+          Redirect(routes.DataController.mainDataView).flashing(BaseController.FLASH_SUCCESS_KEY -> Messages("driver.added",neoDriver.name));
+        }
+      )
+  }
+
+  def saveImageData(node:AbstractNeoNode, imageData: String) {
+    if(node.id == null) {
+      return
+    }
+
+    if(imageData.isEmpty == true) {
+      return
+    }
+
+    val imageDataBytes = Base64.decodeBase64(imageData);
+    FileUtils.writeByteArrayToFile(new File("target/"+node.id),imageDataBytes,false);
   }
 
 }

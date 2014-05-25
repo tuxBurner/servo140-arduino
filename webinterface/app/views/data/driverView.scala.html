@@ -13,7 +13,9 @@
     @if(drivers.isEmpty == true) {
         @Messages("driver.none")
     } else {
-        @drivers
+        @for(driver <- drivers) {
+            @driver.name
+        }
     }
     </div>
 </div>

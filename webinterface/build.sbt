@@ -10,7 +10,7 @@ libraryDependencies ++= Seq(
   "org.webjars" % "jquery" % "1.11.0-1",
   "org.webjars" % "font-awesome" % "4.0.3",
   "com.github.tuxBurner" %% "play-jsannotations" % "1.2.0",
-  "com.github.tuxBurner" %% "play-neo4jplugin" % "1.3.3",
+  "com.github.tuxBurner" %% "play-neo4jplugin" % "1.3.5",
   "com.github.tuxBurner" %% "play-twbs3" % "0.1",
   "org.imgscalr" % "imgscalr-lib" % "4.2",
   "org.scream3r" % "jssc" % "2.8.0"
