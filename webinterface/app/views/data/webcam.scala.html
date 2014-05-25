@@ -1,11 +1,21 @@
+<div class="rows">
+    <h2>@Messages("image")</h2>
+</div>
 <div class="row">
     <div class="col-md-6">
-        <div id="my_camera" class="webcamContainer"></div>
+        <div id="dropZone">@Messages("drop.file")</div>
+        <div id="webcamControl">
+            <div id="my_camera" class="webcamContainer"></div>
+            @twbs.buttons.buttonDefault("button", 'onclick -> "javascript: takeSnapshot();") {
+                @Messages("webcam.capture")
+            }
+        </div>
+
+        @twbs.buttons.buttonInfo("button", 'onclick -> "javascript: startWebcam();") {
+            @Messages("webcam.start")
+        }
     </div>
     <div class="col-md-6">
-        <div id="my_result" class="webcamContainer""></div>
+        <div id="my_result" class="webcamContainer"></div>
+    </div>
 </div>
-</div>
-@twbs.buttons.buttonDefault("button", 'onclick -> "javascript: takeSnapshot();") {
-    @Messages("webcam.capture")
-}
