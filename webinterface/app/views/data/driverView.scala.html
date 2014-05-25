@@ -25,7 +25,7 @@
                     }
                     </td>
                     <td>@driver.name</td>
-                    <td>@twbs.buttons.buttonInfo("button") {
+                    <td>@twbs.buttons.buttonInfo("button", 'class -> "driverEditBtn", Symbol("data-driverid") -> driver.id) {
                         @Messages("edit")
                     }</td>
                 </tr>
