@@ -16,9 +16,9 @@ public class RaceDriverCar extends AbstractNeoNode {
 
     @Fetch
     @RelatedTo(type = RelationNames.RACE_DRIVER)
-    public Driver driver;
+    public NeoDriver driver;
 
     @Fetch
     @RelatedTo(type = RelationNames.RACE_CAR)
-    public Car car;
+    public NeoCar car;
 }

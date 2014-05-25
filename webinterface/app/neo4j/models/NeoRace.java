@@ -13,11 +13,11 @@ import org.springframework.data.neo4j.annotation.RelatedTo;
  */
 @NodeEntity
 @TypeAlias(value = TypeAliasNames.RACE)
-public class Race extends AbstractNeoNode {
+public class NeoRace extends AbstractNeoNode {
 
     @Fetch
     @RelatedTo(type = RelationNames.RACE_TO_TRACK)
-    Track track;
+    NeoTrack track;
 
     @Fetch
     @RelatedTo(type = RelationNames.RACE_DRIVER_CAR)

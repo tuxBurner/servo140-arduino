@@ -9,10 +9,12 @@ import org.springframework.data.neo4j.annotation.NodeEntity;
  * Created by tuxburner on 5/24/14.
  */
 @NodeEntity
-@TypeAlias(value = TypeAliasNames.DRIVER)
-public class Driver extends ImageNeoNode {
+@TypeAlias(value = TypeAliasNames.TRACK)
+public class NeoTrack extends AbstractNeoNode {
 
+    /**
+     * The name of the track
+     */
     @Indexed(unique = true)
     public String name;
-
 }

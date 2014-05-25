@@ -1,0 +1,8 @@
+@(id: Long, form: Form[Driver])
+<div class="row">
+    @twbs.formhelper.form(routes.DataController.editDriver(id), 'id -> "dataAddForm") {
+        @twbs.formhelper.inputText(form("name"))
+        @twbs.formhelper.inputText(form("imageData"), 'type -> "hidden", '_hideLabel -> true, '_hideInfo -> true)
+        @views.html.data.webcam.render()
+    }
+</div>

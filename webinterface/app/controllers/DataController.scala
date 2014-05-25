@@ -3,7 +3,7 @@ package controllers
 import play.api.mvc.{Action, Controller}
 import neo4j.Neo4JServiceProvider
 import org.springframework.data.domain.Sort
-import neo4j.models.{ImageNeoNode, Track}
+import neo4j.models.{ImageNeoNode, NeoTrack}
 import plugins.jsAnnotations.JSRoute
 import scala.collection.JavaConverters._
 import play.api.i18n.Messages
@@ -43,7 +43,7 @@ object DataController extends Controller {
    */
   @JSRoute
   def addTrack(name: String) = Action {
-    val track = new Track();
+    val track = new NeoTrack();
     track.name = name;
     Neo4JServiceProvider.get().trackRepo.save(track);
     Ok("");
@@ -72,22 +72,65 @@ object DataController extends Controller {
    * Adds the driver to the database
    * @return
    */
-  @JSRoute
   def addDriver = Neo4jTransactionAction {
     implicit request =>
 
       Forms.DriverForm.bindFromRequest.fold(
         formWithErrors => {
-          Redirect(routes.DataController.mainDataView).flashing(BaseController.FLASH_ERROR_KEY -> "Could not add driver");
+          Redirect(routes.DataController.mainDataView).flashing(BaseController.FLASH_ERROR_KEY -> "driver.add.error");
         },
         value => {
           val driverForm = Forms.DriverForm.bindFromRequest()
-          val neoDriver = new neo4j.models.Driver();
+          val neoDriver = new neo4j.models.NeoDriver();
           neoDriver.name = driverForm.get.name;
 
           val neoDriverSaved = Neo4JServiceProvider.get().driverRepo.save(neoDriver);
           saveImageData(neoDriverSaved, driverForm.get.imageData);
-          Redirect(routes.DataController.mainDataView).flashing(BaseController.FLASH_SUCCESS_KEY -> Messages("driver.added", neoDriver.name));
+          Redirect(routes.DataController.mainDataView).flashing(BaseController.FLASH_SUCCESS_KEY -> Messages("driver.add.success", neoDriver.name));
+        }
+      )
+  }
+
+  /**
+   * Displays the edit page for the driver
+   * @param id
+   * @return
+   */
+  @JSRoute
+  def displayEditDriver(id: Long) = Neo4jTransactionAction {
+    val neoDriver = Neo4JServiceProvider.get().driverRepo.findOne(id);
+
+    val imageData = neoDriver.hasPicture.booleanValue() match {
+      case true => getImageDataAsBas64String(id)
+      case false => ""
+    }
+
+
+    val form = Forms.DriverForm.fill(Driver.apply(neoDriver.name, imageData));
+
+    Ok(views.html.data.editDriver(id, form))
+  }
+
+  /**
+   * Displays the edit page for the driver
+   * @param id
+   * @return
+   */
+  def editDriver(id: Long) = Neo4jTransactionAction {
+    implicit request =>
+
+      Forms.DriverForm.bindFromRequest.fold(
+        formWithErrors => {
+          Redirect(routes.DataController.mainDataView).flashing(BaseController.FLASH_ERROR_KEY -> "driver.edit.error");
+        },
+        value => {
+          val driverForm = Forms.DriverForm.bindFromRequest()
+          val neoDriver = Neo4JServiceProvider.get().driverRepo.findOne(id);
+          neoDriver.name = driverForm.get.name;
+
+          val neoDriverSaved = Neo4JServiceProvider.get().driverRepo.save(neoDriver);
+          saveImageData(neoDriverSaved, driverForm.get.imageData);
+          Redirect(routes.DataController.mainDataView).flashing(BaseController.FLASH_SUCCESS_KEY -> Messages("driver.edit.success", neoDriver.name));
         }
       )
   }
@@ -100,6 +143,10 @@ object DataController extends Controller {
   def displayImage(id: Long) = Action {
     val imageData = FileUtils.readFileToByteArray(new File("dataImages/" + id))
     Ok(imageData)
+  }
+
+  def getImageDataAsBas64String(id: Long): String = {
+    Base64.encodeBase64String(FileUtils.readFileToByteArray(new File("dataImages/" + id)))
   }
 
   /**

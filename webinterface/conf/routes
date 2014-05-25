@@ -12,10 +12,16 @@ GET         /ws                               controllers.ApplicationController.
 
 # Data Stuff
 GET         /data                             controllers.DataController.mainDataView
+
+## Data Drivers
 GET         /data/drivers                     controllers.DataController.listDrivers
 GET         /data/drivers/add                 controllers.DataController.displayAddDriver
 POST        /data/drivers/add                 controllers.DataController.addDriver
-GET        /data/image/:id        controllers.DataController.displayImage(id: Long)
+GET         /data/drivers/:id/edit            controllers.DataController.displayEditDriver(id: Long)
+POST        /data/drivers/:id/edit            controllers.DataController.editDriver(id: Long)
+
+## Data iamges
+GET         /data/image/:id                   controllers.DataController.displayImage(id: Long)
 
 
 # Javascript routing

@@ -21,6 +21,9 @@ $(function () {
     $(document).on('click', '#driverAddBtn', function () {
         openAddModal(jsRoutes.controllers.DataController.displayAddDriver());
     });
+    $(document).on('click', '.driverEditBtn', function () {
+        openAddModal(jsRoutes.controllers.DataController.displayEditDriver($(this).data('driverid')));
+    });
 
     loadDriverTab();
 })
@@ -33,6 +36,10 @@ var loadDriverTab = function () {
 }
 
 
+/**
+ * Opens a modal
+ * @param route
+ */
 var openAddModal = function (route) {
     pAjax(route, null, function (data) {
         $('#dataModalContent').html(data);
@@ -41,7 +48,13 @@ var openAddModal = function (route) {
     });
 }
 
+/**
+ * Starts the webcam capture
+ */
 var startWebcamCapture = function () {
+
+    $('#my_result').html('<img src="data:image/jpeg;base64,' + $('#imageData').val() + '"/>');
+
     Webcam.set({
         image_format: 'jpeg',
         jpeg_quality: 90,
@@ -50,9 +63,12 @@ var startWebcamCapture = function () {
     Webcam.attach('#my_camera');
 }
 
+/**
+ * Takes a snapshot from the webcam
+ */
 var takeSnapshot = function () {
     var data_uri = Webcam.snap();
-    document.getElementById('my_result').innerHTML = '<img src="' + data_uri + '"/>';
+    $('#my_result').html('<img src="' + data_uri + '"/>');
     var raw_image_data = data_uri.replace(/^data\:image\/\w+\;base64\,/, '');
     $('#imageData').val(raw_image_data);
 }
