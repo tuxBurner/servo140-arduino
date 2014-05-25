@@ -145,6 +145,11 @@ object DataController extends Controller {
     Ok(imageData)
   }
 
+  /**
+   * Encodes the image data to a base64 string
+   * @param id
+   * @return
+   */
   def getImageDataAsBas64String(id: Long): String = {
     Base64.encodeBase64String(FileUtils.readFileToByteArray(new File("dataImages/" + id)))
   }
