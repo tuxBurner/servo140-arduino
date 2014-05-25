@@ -3,16 +3,6 @@
     @twbs.formhelper.form(routes.DataController.addDriver(), 'id -> "dataAddForm") {
         @twbs.formhelper.inputText(form("name"))
         @twbs.formhelper.inputText(form("imageData"),'type->"hidden",'_hideLabel -> true,'_hideInfo -> true)
-        <div class="row">
-            <div class="col-md-6">
-                <div id="my_camera" style="width : 320px; height : 240px;"></div>
-            </div>
-            <div class="col-md-6">
-                <div id="my_result" style="width : 320px; height : 240px;"></div>
-            </div>
-        </div>
-        @twbs.buttons.buttonDefault("button", 'onclick -> "javascript: takeSnapshot();") {
-            @Messages("webcam.capture")
-        }
+        @views.html.data.webcam.render()
     }
 </div>

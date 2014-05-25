@@ -10,8 +10,9 @@ import org.springframework.data.neo4j.annotation.NodeEntity;
  */
 @NodeEntity
 @TypeAlias(value = TypeAliasNames.DRIVER)
-public class Driver extends AbstractNeoNode {
+public class Driver extends ImageNeoNode {
 
     @Indexed(unique = true)
     public String name;
+
 }

@@ -13,9 +13,25 @@
     @if(drivers.isEmpty == true) {
         @Messages("driver.none")
     } else {
-        @for(driver <- drivers) {
-            @driver.name
-        }
+
+        <table class="table table-bordered">
+            <tbody>
+            @for(driver <- drivers) {
+                <tr>
+                    <td>@driver.id</td>
+                    <td>
+                    @if(driver.hasPicture == true) {
+                        <img height="64" class="img-circle" src="@routes.DataController.displayImage(driver.id)" />
+                    }
+                    </td>
+                    <td>@driver.name</td>
+                    <td>@twbs.buttons.buttonInfo("button") {
+                        @Messages("edit")
+                    }</td>
+                </tr>
+            }
+            </tbody>
+        </table>
     }
     </div>
 </div>

@@ -3,7 +3,7 @@ package controllers
 import play.api.mvc.{Action, Controller}
 import neo4j.Neo4JServiceProvider
 import org.springframework.data.domain.Sort
-import neo4j.models.{AbstractNeoNode, Driver, Track}
+import neo4j.models.{ImageNeoNode, Track}
 import plugins.jsAnnotations.JSRoute
 import scala.collection.JavaConverters._
 import play.api.i18n.Messages
@@ -73,7 +73,7 @@ object DataController extends Controller {
    * @return
    */
   @JSRoute
-  def addDriver = Action {
+  def addDriver = Neo4jTransactionAction {
     implicit request =>
 
       Forms.DriverForm.bindFromRequest.fold(
@@ -84,11 +84,22 @@ object DataController extends Controller {
           val driverForm = Forms.DriverForm.bindFromRequest()
           val neoDriver = new neo4j.models.Driver();
           neoDriver.name = driverForm.get.name;
+
           val neoDriverSaved = Neo4JServiceProvider.get().driverRepo.save(neoDriver);
-          saveImageData(neoDriverSaved,driverForm.get.imageData);
-          Redirect(routes.DataController.mainDataView).flashing(BaseController.FLASH_SUCCESS_KEY -> Messages("driver.added",neoDriver.name));
+          saveImageData(neoDriverSaved, driverForm.get.imageData);
+          Redirect(routes.DataController.mainDataView).flashing(BaseController.FLASH_SUCCESS_KEY -> Messages("driver.added", neoDriver.name));
         }
       )
+  }
+
+  /**
+   * Streams the image
+   * @param id
+   * @return
+   */
+  def displayImage(id: Long) = Action {
+    val imageData = FileUtils.readFileToByteArray(new File("dataImages/" + id))
+    Ok(imageData)
   }
 
   /**
@@ -96,17 +107,18 @@ object DataController extends Controller {
    * @param node
    * @param imageData
    */
-  def saveImageData(node:AbstractNeoNode, imageData: String) {
-    if(node.id == null) {
+  def saveImageData(node: ImageNeoNode, imageData: String) {
+    if (node.id == null) {
       return
     }
-
-    if(imageData.isEmpty == true) {
-      return
+    if (imageData.isEmpty == true) {
+      node.hasPicture = false;
+    } else {
+      node.hasPicture = true;
+      val imageDataBytes = Base64.decodeBase64(imageData);
+      FileUtils.writeByteArrayToFile(new File("dataImages/" + node.id), imageDataBytes, false);
     }
-
-    val imageDataBytes = Base64.decodeBase64(imageData);
-    FileUtils.writeByteArrayToFile(new File("dataImages/"+node.id),imageDataBytes,false);
+    Neo4JServiceProvider.get().template.save(node);
   }
 
 }
