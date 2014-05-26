@@ -10,10 +10,10 @@ import org.springframework.data.neo4j.annotation.NodeEntity;
  */
 @NodeEntity
 @TypeAlias(value = TypeAliasNames.CAR)
-public class NeoCar extends AbstractNeoNode {
+public class NeoCar extends ImageNeoNode {
 
     @Indexed(unique = true)
     public String name;
 
-    public CarType type;
+    public CarType carType;
 }

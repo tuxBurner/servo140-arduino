@@ -8,7 +8,6 @@
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>@title @Messages("headline.suffix")</title>
             <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
-
             @* Here the css please *@
             <link rel="stylesheet" media="screen" href="@routes.WebJarAssets.at(WebJarAssets.locate("bootstrap.min.css"))">
             <link rel='stylesheet' media="screen" href='@routes.WebJarAssets.at(WebJarAssets.locate("font-awesome.min.css"))'>
@@ -34,9 +33,9 @@
                             <li class="active"><a href="@routes.ApplicationController.index()">Simple</a></li>
                             <li><a href="#about">About</a></li>
                             <li><a href="#" id="settingsBtn">Settings</a></li>
-                            <li><a href="@routes.DataController.mainDataView">Data</a></li>
+                            <li><a href="@routes.DataController.mainDataView#drivers">Data</a></li>
                         </ul>
-                    </div><!--/.nav-collapse -->
+                    </div> <!--/.nav-collapse -->
                 </div>
             </div>
 
@@ -83,13 +82,10 @@
                     </div>
                 </div>
             </div>
-
-
             @* Here the javascripts please *@
             <script type='text/javascript' src='@routes.WebJarAssets.at(WebJarAssets.locate("jquery.min.js"))'></script>
             <script type='text/javascript' src='@routes.WebJarAssets.at(WebJarAssets.locate("bootstrap.min.js"))'></script>
             <script type='text/javascript' src='@routes.Assets.at("javascripts/main.js")'></script>
-
             @* JS Routes *@
             <script src="@routes.ApplicationController.jsRoutes" type="text/javascript" defer="defer"></script>
 

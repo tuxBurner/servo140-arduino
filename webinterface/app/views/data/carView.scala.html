@@ -1,0 +1,38 @@
+@(cars: List[neo4j.models.NeoCar])
+
+<div class="row">
+    <div class="col-md-12">
+        @twbs.buttons.buttonPrimary("button", 'id -> "carAddBtn") {
+            @Messages("add")
+        }
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+    @if(cars.isEmpty == true) {
+        @Messages("car.none")
+    } else {
+
+        <table class="table table-bordered">
+            <tbody>
+            @for(car <- cars) {
+                <tr>
+                    <td>@car.id</td>
+                    <td>
+                    @if(car.hasPicture == true) {
+                        <img height="64" class="img-circle" src="@routes.DataController.displayImage(car.id)" />
+                    }
+                    </td>
+                    <td>@car.name</td>
+                    <td>@car.carType.name()</td>
+                    <td>@twbs.buttons.buttonInfo("button", 'class -> "carEditBtn", Symbol("data-driverid") -> car.id) {
+                        @Messages("edit")
+                    }</td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    }
+    </div>
+</div>

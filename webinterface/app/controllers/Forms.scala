@@ -5,11 +5,23 @@ import play.api.data.Forms._
 
 case class Driver(name: String, imageData: String)
 
+case class Car(carType: String, imageName: Driver)
+
 object Forms {
+
+  val imageNameMapping = mapping(
+    "name" -> nonEmptyText,
+    "imageData" -> text
+  )(Driver.apply)(Driver.unapply)
+
   val DriverForm = Form(
-    mapping(
-      "name" -> nonEmptyText,
-      "imageData" -> text
-    )(Driver.apply)(Driver.unapply)
+    imageNameMapping
   )
+
+  val CarForm = Form(
+    mapping("carType" -> nonEmptyText,
+      "imageName" -> imageNameMapping
+    )
+      (Car.apply)(Car.unapply)
+  );
 }

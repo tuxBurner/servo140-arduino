@@ -20,6 +20,11 @@ POST        /data/drivers/add                 controllers.DataController.addDriv
 GET         /data/drivers/:id/edit            controllers.DataController.displayEditDriver(id: Long)
 POST        /data/drivers/:id/edit            controllers.DataController.editDriver(id: Long)
 
+## DATA Cars
+GET         /data/cars            controllers.DataController.listCars
+GET         /data/cars/add        controllers.DataController.displayAddCar
+POST        /data/cars/add        controllers.DataController.addCar
+
 ## Data iamges
 GET         /data/image/:id                   controllers.DataController.displayImage(id: Long)
 

@@ -3,7 +3,7 @@ package controllers
 import play.api.mvc.{Action, Controller}
 import neo4j.Neo4JServiceProvider
 import org.springframework.data.domain.Sort
-import neo4j.models.{ImageNeoNode, NeoTrack}
+import neo4j.models.{CarType, ImageNeoNode, NeoTrack}
 import plugins.jsAnnotations.JSRoute
 import scala.collection.JavaConverters._
 import play.api.i18n.Messages
@@ -58,6 +58,7 @@ object DataController extends Controller {
     val drivers = Neo4JServiceProvider.get().driverRepo.findAll(new Sort("name")).iterator().asScala.toList;
     Ok(views.html.data.driverView(drivers))
   }
+
 
   /**
    * Displays the add driver form
@@ -124,16 +125,56 @@ object DataController extends Controller {
           Redirect(routes.DataController.mainDataView).flashing(BaseController.FLASH_ERROR_KEY -> "driver.edit.error");
         },
         value => {
-          val driverForm = Forms.DriverForm.bindFromRequest()
           val neoDriver = Neo4JServiceProvider.get().driverRepo.findOne(id);
-          neoDriver.name = driverForm.get.name;
-
+          neoDriver.name = value.name
           val neoDriverSaved = Neo4JServiceProvider.get().driverRepo.save(neoDriver);
-          saveImageData(neoDriverSaved, driverForm.get.imageData);
+          saveImageData(neoDriverSaved, value.imageData);
           Redirect(routes.DataController.mainDataView).flashing(BaseController.FLASH_SUCCESS_KEY -> Messages("driver.edit.success", neoDriver.name));
         }
       )
   }
+
+  /**
+   * Lists all cars
+   * @return
+   */
+  @JSRoute
+  def listCars = Neo4jTransactionAction {
+    val cars = Neo4JServiceProvider.get().carRepo.findAll(new Sort("name")).iterator().asScala.toList;
+    Ok(views.html.data.carView(cars))
+  }
+
+  /**
+   * Displays the add cars form
+   * @return
+   */
+  @JSRoute
+  def displayAddCar = Action {
+    Ok(views.html.data.addCar(Forms.CarForm))
+  }
+
+  /**
+   * Adds the driver to the database
+   * @return
+   */
+  def addCar = Neo4jTransactionAction {
+    implicit request =>
+
+      Forms.CarForm.bindFromRequest.fold(
+        formWithErrors => {
+          Redirect(routes.DataController.mainDataView).flashing(BaseController.FLASH_ERROR_KEY -> "car.add.error");
+        },
+        value => {
+          val neoCar = new neo4j.models.NeoCar();
+          neoCar.name = value.imageName.name;
+          neoCar.carType = CarType.valueOf(value.carType);
+          val neoCarSaved = Neo4JServiceProvider.get().carRepo.save(neoCar);
+          saveImageData(neoCarSaved, value.imageName.imageData);
+          Redirect(routes.DataController.mainDataView).flashing(BaseController.FLASH_SUCCESS_KEY -> Messages("car.add.success", neoCar.name));
+        }
+      )
+  }
+
 
   /**
    * Streams the image
@@ -160,6 +201,7 @@ object DataController extends Controller {
    * @param imageData
    */
   def saveImageData(node: ImageNeoNode, imageData: String) {
+
     if (node.id == null) {
       return
     }

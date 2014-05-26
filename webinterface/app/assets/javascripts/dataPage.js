@@ -7,6 +7,14 @@ $(function () {
         $('#dataAddForm').submit();
     });
 
+    $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+        var hash = e.target.hash;
+        $(hash).html("");
+        e.target // activated tab
+        loadDdataTab(hash);
+
+    })
+
     // bind events to the modal
     $('#dataModal').on('shown.bs.modal', function (e) {
         startWebcamCapture();
@@ -21,16 +29,45 @@ $(function () {
     $(document).on('click', '#driverAddBtn', function () {
         openAddModal(jsRoutes.controllers.DataController.displayAddDriver());
     });
+    $(document).on('click', '#carAddBtn', function () {
+        openAddModal(jsRoutes.controllers.DataController.displayAddCar());
+    });
     $(document).on('click', '.driverEditBtn', function () {
         openAddModal(jsRoutes.controllers.DataController.displayEditDriver($(this).data('driverid')));
     });
 
-    loadDriverTab();
+
+    var currentHash = window.location.hash;
+    if (currentHash == "") {
+        currentHash = "#drivers";
+        window.location.hash = currentHash;
+    }
+
+
+    $('#dataTab a[href="' + currentHash + '"]').tab('show');
 })
 
-var loadDriverTab = function () {
-    pAjax(jsRoutes.controllers.DataController.listDrivers(), null, function (data) {
-        $('#drivers').html(data);
+/**
+ * Loads the data in the tab
+ * @param hash
+ */
+var loadDdataTab = function (hash) {
+
+    var url = "";
+
+    switch (hash) {
+        case "#drivers":
+            url = jsRoutes.controllers.DataController.listDrivers();
+            break;
+        case "#cars" :
+            url = jsRoutes.controllers.DataController.listCars();
+            break;
+    }
+
+    window.location.hash = hash;
+
+    pAjax(url, null, function (data) {
+        $(hash).html(data);
     }, function (data) {
     });
 }
