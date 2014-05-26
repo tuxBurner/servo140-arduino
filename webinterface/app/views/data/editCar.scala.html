@@ -1,6 +1,6 @@
-@(form: Form[Car])
+@(id:Long, form: Form[Car])
 <div class="row">
-    @twbs.formhelper.form(routes.DataController.addCar(), 'id -> "dataAddForm") {
+    @twbs.formhelper.form(routes.DataController.editCar(id), 'id -> "dataAddForm") {
         @twbs.formhelper.inputText(form("imageName.name"))
         @twbs.formhelper.inputText(form("imageName.imageData"), 'type -> "hidden", '_hideLabel -> true, '_hideInfo -> true, 'id -> "imageData")
         @twbs.formhelper.select(field = form("carType"), options = views.html.helper.options(neo4j.models.CarType.getCarTypes))

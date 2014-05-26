@@ -35,6 +35,9 @@ $(function () {
     $(document).on('click', '.driverEditBtn', function () {
         openAddModal(jsRoutes.controllers.DataController.displayEditDriver($(this).data('driverid')));
     });
+    $(document).on('click', '.carEditBtn', function () {
+        openAddModal(jsRoutes.controllers.DataController.displayEditCar($(this).data('carid')));
+    });
 
 
     var currentHash = window.location.hash;

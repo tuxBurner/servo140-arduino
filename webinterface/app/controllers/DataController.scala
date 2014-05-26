@@ -100,20 +100,12 @@ object DataController extends Controller {
   @JSRoute
   def displayEditDriver(id: Long) = Neo4jTransactionAction {
     val neoDriver = Neo4JServiceProvider.get().driverRepo.findOne(id);
-
-    val imageData = neoDriver.hasPicture.booleanValue() match {
-      case true => getImageDataAsBas64String(id)
-      case false => ""
-    }
-
-
-    val form = Forms.DriverForm.fill(Driver.apply(neoDriver.name, imageData));
-
+    val form = Forms.DriverForm.fill(Driver.apply(neoDriver.name, getImageDataForNode(neoDriver)));
     Ok(views.html.data.editDriver(id, form))
   }
 
   /**
-   * Displays the edit page for the driver
+   * Edits the driver
    * @param id
    * @return
    */
@@ -127,8 +119,8 @@ object DataController extends Controller {
         value => {
           val neoDriver = Neo4JServiceProvider.get().driverRepo.findOne(id);
           neoDriver.name = value.name
-          val neoDriverSaved = Neo4JServiceProvider.get().driverRepo.save(neoDriver);
-          saveImageData(neoDriverSaved, value.imageData);
+          //val neoDriverSaved = Neo4JServiceProvider.get().driverRepo.save(neoDriver);
+          saveImageData(neoDriver, value.imageData);
           Redirect(routes.DataController.mainDataView).flashing(BaseController.FLASH_SUCCESS_KEY -> Messages("driver.edit.success", neoDriver.name));
         }
       )
@@ -154,7 +146,7 @@ object DataController extends Controller {
   }
 
   /**
-   * Adds the driver to the database
+   * Adds the car to the database
    * @return
    */
   def addCar = Neo4jTransactionAction {
@@ -175,6 +167,52 @@ object DataController extends Controller {
       )
   }
 
+  /**
+   * Displays the edit page for the car
+   * @param id
+   * @return
+   */
+  @JSRoute
+  def displayEditCar(id: Long) = Neo4jTransactionAction {
+    val neoCar = Neo4JServiceProvider.get().carRepo.findOne(id);
+    val form = Forms.CarForm.fill(Car.apply(neoCar.carType.name(), Driver.apply(neoCar.name,getImageDataForNode(neoCar))));
+    Ok(views.html.data.editCar(id, form))
+  }
+
+  /**
+   * Edits the car
+   * @param id
+   * @return
+   */
+  def editCar(id: Long) = Neo4jTransactionAction {
+    implicit request =>
+
+      Forms.CarForm.bindFromRequest.fold(
+        formWithErrors => {
+          Redirect(routes.DataController.mainDataView).flashing(BaseController.FLASH_ERROR_KEY -> "car.edit.error");
+        },
+        value => {
+          val neoCar = Neo4JServiceProvider.get().carRepo.findOne(id);
+          neoCar.name = value.imageName.name
+          neoCar.carType = CarType.valueOf(value.carType)
+          //val neoCarSaved = Neo4JServiceProvider.get().carRepo.save(neoCar);
+          saveImageData(neoCar, value.imageName.imageData);
+          Redirect(routes.DataController.mainDataView).flashing(BaseController.FLASH_SUCCESS_KEY -> Messages("car.edit.success", neoCar.name));
+        }
+      )
+  }
+
+  /**
+   * Gets the image data for the given node
+   * @param node
+   * @return
+   */
+  def getImageDataForNode(node: ImageNeoNode): String = {
+    node.hasPicture.booleanValue() match {
+      case true => getImageDataAsBas64String(node.id)
+      case false => ""
+    }
+  }
 
   /**
    * Streams the image
