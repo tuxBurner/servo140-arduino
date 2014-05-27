@@ -14,18 +14,16 @@
     }
     <!-- Nav tabs -->
     <ul class="nav nav-tabs" id="dataTab">
-        <li class="active"><a href="#drivers" data-toggle="tab">@Messages("data.tab.drivers")</a></li>
+        <li><a href="#drivers" data-toggle="tab">@Messages("data.tab.drivers")</a></li>
         <li><a href="#cars" data-toggle="tab">@Messages("data.tab.cars")</a></li>
-        <li><a href="#messages" data-toggle="tab">Messages</a></li>
-        <li><a href="#settings" data-toggle="tab">Settings</a></li>
+        <li><a href="#tracks" data-toggle="tab">@Messages("data.tab.tracks")</a></li>
     </ul>
 
     <!-- Tab panes -->
     <div class="tab-content">
-        <div class="tab-pane active" id="drivers">Driver</div>
-        <div class="tab-pane" id="cars">Cars</div>
-        <div class="tab-pane" id="messages">...</div>
-        <div class="tab-pane" id="settings">...</div>
+        <div class="tab-pane" id="drivers"></div>
+        <div class="tab-pane" id="cars"></div>
+        <div class="tab-pane" id="tracks"></div>
     </div>
 
     <div class="modal fade" id="dataModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">

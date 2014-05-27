@@ -1,4 +1,4 @@
-@(form: Form[Driver])
+@(form: Form[ImageName])
 <div class="row">
     @twbs.formhelper.form(routes.DataController.addDriver(), 'id -> "dataAddForm") {
         @twbs.formhelper.inputText(form("name"))

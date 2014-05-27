@@ -1,0 +1,32 @@
+@(tracks: List[neo4j.models.NeoTrack])
+
+<div class="row">
+    <div class="col-md-12">
+        @twbs.buttons.buttonPrimary("button",'class->"dataAddBtn", Symbol("data-formtype") -> "tracks") {
+            @Messages("track.add")
+        }
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+    @if(tracks.isEmpty == true) {
+        @Messages("track.none")
+    } else {
+
+        <table class="table table-bordered">
+            <tbody>
+            @for(track <- tracks) {
+                <tr>
+                    <td>@track.id</td>
+                    <td>@track.name</td>
+                    <td>@twbs.buttons.buttonInfo("button", 'class -> "trackEditBtn", Symbol("data-trackid") -> track.id) {
+                        @Messages("edit")
+                    }</td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    }
+    </div>
+</div>

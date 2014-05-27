@@ -24,19 +24,22 @@ $(function () {
         Webcam.reset();
     })
 
+    $(document).on('click', '.dataAddBtn', function () {
+        openAddModal(jsRoutes.controllers.DataController.displayAddForm($(this).data('formtype')));
+    });
 
-    // bind events to the add buttons
-    $(document).on('click', '#driverAddBtn', function () {
-        openAddModal(jsRoutes.controllers.DataController.displayAddDriver());
-    });
-    $(document).on('click', '#carAddBtn', function () {
-        openAddModal(jsRoutes.controllers.DataController.displayAddCar());
-    });
+    // driver buttons
     $(document).on('click', '.driverEditBtn', function () {
         openAddModal(jsRoutes.controllers.DataController.displayEditDriver($(this).data('driverid')));
     });
+    // car buttons
     $(document).on('click', '.carEditBtn', function () {
         openAddModal(jsRoutes.controllers.DataController.displayEditCar($(this).data('carid')));
+    });
+
+    // tracks buttons
+    $(document).on('click', '.trackEditBtn', function () {
+        openAddModal(jsRoutes.controllers.DataController.displayEditTrack($(this).data('trackid')));
     });
 
 
@@ -58,6 +61,9 @@ var loadDdataTab = function (currentTab) {
             break;
         case "cars" :
             url = jsRoutes.controllers.DataController.listCars();
+            break;
+        case "tracks" :
+            url = jsRoutes.controllers.DataController.listTracks();
             break;
     }
 

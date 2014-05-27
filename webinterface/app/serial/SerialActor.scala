@@ -12,7 +12,6 @@ import akka.pattern.ask
 
 import play.api.Play.current
 import play.api.libs.concurrent.Execution.Implicits._
-import play.api.Logger
 
 
 object SerialActor {
@@ -22,9 +21,9 @@ object SerialActor {
   val roomActor = Akka.system.actorOf(Props[SerialActor]);
 
 
-
   def attach(): scala.concurrent.Future[(Iteratee[String, _], Enumerator[String])] = {
-    // try to add the player to the room
+    // ? means ask the akto and wait for a response
+    // ! means fire the event and dont wait for a response
     (roomActor ? Join()).map {
       case Connected(enumerator) =>
         // Create an Iteratee to consume the feed
@@ -44,6 +43,7 @@ class SerialActor extends Actor {
 
   val (chatEnumerator, chatChannel) = Concurrent.broadcast[String]
 
+  // What to do when the actor recieves a message
   override def receive: Actor.Receive = {
     case Join() => {
       sender ! Connected(chatEnumerator)

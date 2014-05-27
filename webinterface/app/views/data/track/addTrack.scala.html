@@ -1,0 +1,6 @@
+@(form: Form[Track])
+<div class="row">
+    @twbs.formhelper.form(routes.DataController.addTrack(), 'id -> "dataAddForm") {
+        @twbs.formhelper.inputText(form("name"))
+    }
+</div>

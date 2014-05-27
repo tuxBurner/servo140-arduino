@@ -13,7 +13,7 @@ object Global extends GlobalSettings {
     try {
       SerialReader.openConnection();
     } catch {
-      case _ => Logger.error("An error happened while connecting to the Arduino");
+      case _: Throwable => Logger.error("An error happened while connecting to the Arduino");
     }
 
   }

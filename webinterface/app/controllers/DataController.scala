@@ -23,7 +23,21 @@ object DataController extends Controller {
    */
   def mainDataView(tab: String) = Action {
     implicit request =>
-      Ok(views.html.data.mainview.render(tab,(request)));
+      Ok(views.html.data.mainview.render(tab, (request)));
+  }
+
+  /**
+   * Displays the add for the given type form
+   * @return
+   */
+  @JSRoute
+  def displayAddForm(formType: String) = Action {
+    formType match {
+      case "drivers" => Ok(views.html.data.driver.addDriver(Forms.ImageNameForm))
+      case "cars" => Ok(views.html.data.car.addCar(Forms.CarForm))
+      case "tracks" => Ok(views.html.data.track.addTrack(Forms.TrackForm))
+    }
+
   }
 
   /**
@@ -31,22 +45,61 @@ object DataController extends Controller {
    * @return
    */
   @JSRoute
-  def listTracks = Action {
-    Neo4JServiceProvider.get().trackRepo.findAll(new Sort("name"));
-    Ok("")
+  def listTracks = Neo4jTransactionAction {
+    val tracks = Neo4JServiceProvider.get().trackRepo.findAll(new Sort("name")).asScala.toList;
+    Ok(views.html.data.track.trackView(tracks))
   }
 
   /**
    * Adds a new track
-   * @param name
    * @return
    */
   @JSRoute
-  def addTrack(name: String) = Action {
-    val track = new NeoTrack();
-    track.name = name;
-    Neo4JServiceProvider.get().trackRepo.save(track);
-    Ok("");
+  def addTrack() = Action {
+    implicit request =>
+      Forms.TrackForm.bindFromRequest().fold(
+        formWithErrors => {
+          Redirect(routes.DataController.mainDataView("tracks")).flashing(BaseController.FLASH_ERROR_KEY -> "track.add.error");
+        },
+        value => {
+          val neoTrack = new NeoTrack
+          neoTrack.name = value.name
+          Neo4JServiceProvider.get().trackRepo.save(neoTrack)
+          Redirect(routes.DataController.mainDataView("tracks")).flashing(BaseController.FLASH_SUCCESS_KEY -> Messages("track.add.success", neoTrack.name));
+        }
+      )
+  }
+
+  /**
+   * Displays the edit page for the track
+   * @param id
+   * @return
+   */
+  @JSRoute
+  def displayEditTrack(id: Long) = Neo4jTransactionAction {
+    val neoTrack = Neo4JServiceProvider.get().trackRepo.findOne(id);
+    val form = Forms.TrackForm.fill(Track.apply(neoTrack.name));
+    Ok(views.html.data.track.editTrack(id, form))
+  }
+
+  /**
+   * Edits the track
+   * @param id
+   * @return
+   */
+  def editTrack(id: Long) = Neo4jTransactionAction {
+    implicit request =>
+      Forms.TrackForm.bindFromRequest.fold(
+        formWithErrors => {
+          Redirect(routes.DataController.mainDataView("tracks")).flashing(BaseController.FLASH_ERROR_KEY -> "track.edit.error");
+        },
+        value => {
+          val neoTrack = Neo4JServiceProvider.get().trackRepo.findOne(id);
+          neoTrack .name = value.name
+          Neo4JServiceProvider.get().trackRepo.save(neoTrack);
+          Redirect(routes.DataController.mainDataView("tracks")).flashing(BaseController.FLASH_SUCCESS_KEY -> Messages("track.edit.success", neoTrack.name));
+        }
+      )
   }
 
   /**
@@ -56,18 +109,9 @@ object DataController extends Controller {
   @JSRoute
   def listDrivers = Neo4jTransactionAction {
     val drivers = Neo4JServiceProvider.get().driverRepo.findAll(new Sort("name")).iterator().asScala.toList;
-    Ok(views.html.data.driverView(drivers))
+    Ok(views.html.data.driver.driverView(drivers))
   }
 
-
-  /**
-   * Displays the add driver form
-   * @return
-   */
-  @JSRoute
-  def displayAddDriver = Action {
-    Ok(views.html.data.addDriver(Forms.DriverForm))
-  }
 
   /**
    * Adds the driver to the database
@@ -76,12 +120,12 @@ object DataController extends Controller {
   def addDriver = Neo4jTransactionAction {
     implicit request =>
 
-      Forms.DriverForm.bindFromRequest.fold(
+      Forms.ImageNameForm.bindFromRequest.fold(
         formWithErrors => {
           Redirect(routes.DataController.mainDataView("drivers")).flashing(BaseController.FLASH_ERROR_KEY -> "driver.add.error");
         },
         value => {
-          val driverForm = Forms.DriverForm.bindFromRequest()
+          val driverForm = Forms.ImageNameForm.bindFromRequest()
           val neoDriver = new neo4j.models.NeoDriver();
           neoDriver.name = driverForm.get.name;
 
@@ -100,8 +144,8 @@ object DataController extends Controller {
   @JSRoute
   def displayEditDriver(id: Long) = Neo4jTransactionAction {
     val neoDriver = Neo4JServiceProvider.get().driverRepo.findOne(id);
-    val form = Forms.DriverForm.fill(Driver.apply(neoDriver.name, getImageDataForNode(neoDriver)));
-    Ok(views.html.data.editDriver(id, form))
+    val form = Forms.ImageNameForm.fill(ImageName.apply(neoDriver.name, getImageDataForNode(neoDriver)));
+    Ok(views.html.data.driver.editDriver(id, form))
   }
 
   /**
@@ -112,7 +156,7 @@ object DataController extends Controller {
   def editDriver(id: Long) = Neo4jTransactionAction {
     implicit request =>
 
-      Forms.DriverForm.bindFromRequest.fold(
+      Forms.ImageNameForm.bindFromRequest.fold(
         formWithErrors => {
           Redirect(routes.DataController.mainDataView("drivers")).flashing(BaseController.FLASH_ERROR_KEY -> "driver.edit.error");
         },
@@ -133,17 +177,9 @@ object DataController extends Controller {
   @JSRoute
   def listCars = Neo4jTransactionAction {
     val cars = Neo4JServiceProvider.get().carRepo.findAll(new Sort("name")).iterator().asScala.toList;
-    Ok(views.html.data.carView(cars))
+    Ok(views.html.data.car.carView(cars))
   }
 
-  /**
-   * Displays the add cars form
-   * @return
-   */
-  @JSRoute
-  def displayAddCar = Action {
-    Ok(views.html.data.addCar(Forms.CarForm))
-  }
 
   /**
    * Adds the car to the database
@@ -175,8 +211,8 @@ object DataController extends Controller {
   @JSRoute
   def displayEditCar(id: Long) = Neo4jTransactionAction {
     val neoCar = Neo4JServiceProvider.get().carRepo.findOne(id);
-    val form = Forms.CarForm.fill(Car.apply(neoCar.carType.name(), Driver.apply(neoCar.name,getImageDataForNode(neoCar))));
-    Ok(views.html.data.editCar(id, form))
+    val form = Forms.CarForm.fill(Car.apply(neoCar.carType.name(), ImageName.apply(neoCar.name, getImageDataForNode(neoCar))));
+    Ok(views.html.data.car.editCar(id, form))
   }
 
   /**

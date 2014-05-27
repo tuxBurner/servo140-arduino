@@ -12,20 +12,25 @@ GET         /ws                               controllers.ApplicationController.
 
 # Data Stuff
 GET         /data/tab/:tab                    controllers.DataController.mainDataView(tab:String)
+GET         /data/:formType/add               controllers.DataController.displayAddForm(formType:String)
 
 ## Data Drivers
-GET         /data/drivers                     controllers.DataController.listDrivers
-GET         /data/drivers/add                 controllers.DataController.displayAddDriver
 POST        /data/drivers/add                 controllers.DataController.addDriver
+GET         /data/drivers/list                controllers.DataController.listDrivers
 GET         /data/drivers/:id/edit            controllers.DataController.displayEditDriver(id: Long)
 POST        /data/drivers/:id/edit            controllers.DataController.editDriver(id: Long)
 
 ## DATA Cars
-GET         /data/cars                        controllers.DataController.listCars
-GET         /data/cars/add                    controllers.DataController.displayAddCar
+GET         /data/cars/list                   controllers.DataController.listCars
 POST        /data/cars/add                    controllers.DataController.addCar
 GET         /data/cars/:id/edit               controllers.DataController.displayEditCar(id: Long)
 POST        /data/cars/:id/edit               controllers.DataController.editCar(id: Long)
+
+## DATA Tracks
+GET         /data/tracks/list                 controllers.DataController.listTracks
+POST        /data/tracks/add                  controllers.DataController.addTrack
+GET         /data/tracks/:id/edit             controllers.DataController.displayEditTrack(id: Long)
+POST        /data/tracks/:id/edit             controllers.DataController.editTrack(id: Long)
 
 ## Data iamges
 GET         /data/image/:id                   controllers.DataController.displayImage(id: Long)
