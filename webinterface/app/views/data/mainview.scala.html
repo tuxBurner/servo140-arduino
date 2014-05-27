@@ -1,6 +1,9 @@
-@()(implicit request: play.api.mvc.Request[play.api.mvc.AnyContent])
+@(tab: String)(implicit request: play.api.mvc.Request[play.api.mvc.AnyContent])
 
     @script = {
+        <script type="text/javascript">
+            var currentTab = "@tab";
+        </script>
         <script type='text/javascript' src='@routes.Assets.at("javascripts/dataPage.js")'></script>
         <script type='text/javascript' src='@routes.Assets.at("javascripts/webcam.min.js")'></script>
     }

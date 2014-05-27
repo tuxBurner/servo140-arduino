@@ -11,7 +11,7 @@ $(function () {
         var hash = e.target.hash;
         $(hash).html("");
         e.target // activated tab
-        loadDdataTab(hash);
+        loadDdataTab(hash.substring(1));
 
     })
 
@@ -40,37 +40,29 @@ $(function () {
     });
 
 
-    var currentHash = window.location.hash;
-    if (currentHash == "") {
-        currentHash = "#drivers";
-        window.location.hash = currentHash;
-    }
-
-
-    $('#dataTab a[href="' + currentHash + '"]').tab('show');
+    loadDdataTab(currentTab);
+    $('#dataTab a[href="#' + currentTab+ '"]').tab('show');
 })
 
 /**
  * Loads the data in the tab
  * @param hash
  */
-var loadDdataTab = function (hash) {
+var loadDdataTab = function (currentTab) {
 
     var url = "";
 
-    switch (hash) {
-        case "#drivers":
+    switch (currentTab) {
+        case "drivers":
             url = jsRoutes.controllers.DataController.listDrivers();
             break;
-        case "#cars" :
+        case "cars" :
             url = jsRoutes.controllers.DataController.listCars();
             break;
     }
 
-    window.location.hash = hash;
-
     pAjax(url, null, function (data) {
-        $(hash).html(data);
+        $('#'+currentTab).html(data);
     }, function (data) {
     });
 }

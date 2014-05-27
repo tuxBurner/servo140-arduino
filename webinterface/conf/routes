@@ -11,7 +11,7 @@ POST        /startLightSeq                    controllers.ApplicationController.
 GET         /ws                               controllers.ApplicationController.joinRoomWs
 
 # Data Stuff
-GET         /data                             controllers.DataController.mainDataView
+GET         /data/tab/:tab                    controllers.DataController.mainDataView(tab:String)
 
 ## Data Drivers
 GET         /data/drivers                     controllers.DataController.listDrivers
@@ -24,8 +24,8 @@ POST        /data/drivers/:id/edit            controllers.DataController.editDri
 GET         /data/cars                        controllers.DataController.listCars
 GET         /data/cars/add                    controllers.DataController.displayAddCar
 POST        /data/cars/add                    controllers.DataController.addCar
-GET         /data/cars/:id/edit            controllers.DataController.displayEditCar(id: Long)
-POST        /data/cars/:id/edit            controllers.DataController.editCar(id: Long)
+GET         /data/cars/:id/edit               controllers.DataController.displayEditCar(id: Long)
+POST        /data/cars/:id/edit               controllers.DataController.editCar(id: Long)
 
 ## Data iamges
 GET         /data/image/:id                   controllers.DataController.displayImage(id: Long)

@@ -21,9 +21,9 @@ object DataController extends Controller {
    * The main view when the user clicks on the data option
    * @return
    */
-  def mainDataView = Action {
+  def mainDataView(tab: String) = Action {
     implicit request =>
-      Ok(views.html.data.mainview.render((request)));
+      Ok(views.html.data.mainview.render(tab,(request)));
   }
 
   /**
@@ -78,7 +78,7 @@ object DataController extends Controller {
 
       Forms.DriverForm.bindFromRequest.fold(
         formWithErrors => {
-          Redirect(routes.DataController.mainDataView).flashing(BaseController.FLASH_ERROR_KEY -> "driver.add.error");
+          Redirect(routes.DataController.mainDataView("drivers")).flashing(BaseController.FLASH_ERROR_KEY -> "driver.add.error");
         },
         value => {
           val driverForm = Forms.DriverForm.bindFromRequest()
@@ -87,7 +87,7 @@ object DataController extends Controller {
 
           val neoDriverSaved = Neo4JServiceProvider.get().driverRepo.save(neoDriver);
           saveImageData(neoDriverSaved, driverForm.get.imageData);
-          Redirect(routes.DataController.mainDataView).flashing(BaseController.FLASH_SUCCESS_KEY -> Messages("driver.add.success", neoDriver.name));
+          Redirect(routes.DataController.mainDataView("drivers")).flashing(BaseController.FLASH_SUCCESS_KEY -> Messages("driver.add.success", neoDriver.name));
         }
       )
   }
@@ -114,14 +114,14 @@ object DataController extends Controller {
 
       Forms.DriverForm.bindFromRequest.fold(
         formWithErrors => {
-          Redirect(routes.DataController.mainDataView).flashing(BaseController.FLASH_ERROR_KEY -> "driver.edit.error");
+          Redirect(routes.DataController.mainDataView("drivers")).flashing(BaseController.FLASH_ERROR_KEY -> "driver.edit.error");
         },
         value => {
           val neoDriver = Neo4JServiceProvider.get().driverRepo.findOne(id);
           neoDriver.name = value.name
           //val neoDriverSaved = Neo4JServiceProvider.get().driverRepo.save(neoDriver);
           saveImageData(neoDriver, value.imageData);
-          Redirect(routes.DataController.mainDataView).flashing(BaseController.FLASH_SUCCESS_KEY -> Messages("driver.edit.success", neoDriver.name));
+          Redirect(routes.DataController.mainDataView("drivers")).flashing(BaseController.FLASH_SUCCESS_KEY -> Messages("driver.edit.success", neoDriver.name));
         }
       )
   }
@@ -154,7 +154,7 @@ object DataController extends Controller {
 
       Forms.CarForm.bindFromRequest.fold(
         formWithErrors => {
-          Redirect(routes.DataController.mainDataView).flashing(BaseController.FLASH_ERROR_KEY -> "car.add.error");
+          Redirect(routes.DataController.mainDataView("cars")).flashing(BaseController.FLASH_ERROR_KEY -> "car.add.error");
         },
         value => {
           val neoCar = new neo4j.models.NeoCar();
@@ -162,7 +162,7 @@ object DataController extends Controller {
           neoCar.carType = CarType.valueOf(value.carType);
           val neoCarSaved = Neo4JServiceProvider.get().carRepo.save(neoCar);
           saveImageData(neoCarSaved, value.imageName.imageData);
-          Redirect(routes.DataController.mainDataView).flashing(BaseController.FLASH_SUCCESS_KEY -> Messages("car.add.success", neoCar.name));
+          Redirect(routes.DataController.mainDataView("cars")).flashing(BaseController.FLASH_SUCCESS_KEY -> Messages("car.add.success", neoCar.name));
         }
       )
   }
@@ -189,7 +189,7 @@ object DataController extends Controller {
 
       Forms.CarForm.bindFromRequest.fold(
         formWithErrors => {
-          Redirect(routes.DataController.mainDataView).flashing(BaseController.FLASH_ERROR_KEY -> "car.edit.error");
+          Redirect(routes.DataController.mainDataView("cars")).flashing(BaseController.FLASH_ERROR_KEY -> "car.edit.error");
         },
         value => {
           val neoCar = Neo4JServiceProvider.get().carRepo.findOne(id);
@@ -197,7 +197,7 @@ object DataController extends Controller {
           neoCar.carType = CarType.valueOf(value.carType)
           //val neoCarSaved = Neo4JServiceProvider.get().carRepo.save(neoCar);
           saveImageData(neoCar, value.imageName.imageData);
-          Redirect(routes.DataController.mainDataView).flashing(BaseController.FLASH_SUCCESS_KEY -> Messages("car.edit.success", neoCar.name));
+          Redirect(routes.DataController.mainDataView("cars")).flashing(BaseController.FLASH_SUCCESS_KEY -> Messages("car.edit.success", neoCar.name));
         }
       )
   }
