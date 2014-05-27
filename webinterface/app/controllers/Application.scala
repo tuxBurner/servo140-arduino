@@ -54,7 +54,6 @@ object ApplicationController extends Controller {
   @JSRoute
   def startLightSeq() = Action {
     SerialReader.sendData("L");
-
     Ok;
   }
 
