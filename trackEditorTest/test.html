@@ -31,11 +31,11 @@
           height: 66.66,
           connections: [
             {x: 0,
-            y: 0,
+            y: 33.33,
             acceptedRotation: 0
             },{
               x: 100,
-              y: 0,
+              y: 33.33,
             acceptedRotation: 0
             }
           ]  
@@ -45,11 +45,11 @@
           height: 66.66,
           connections: [
             {x: 0,
-            y: 0,
+            y: 33.33,
             acceptedRotation: 0
             },{
               x: 200,
-              y: 0,
+              y: 33.33,
             acceptedRotation: 0
             }
           ]  
@@ -60,10 +60,10 @@
           connections: [
             {
             x: 0,
-            y: 0,
+            y: 33.33,
             acceptedRotation: 0
             },{
-            x: 112.96,
+            x: 79.63,
             y: 112.96,
             acceptedRotation: 90
            }
@@ -88,9 +88,41 @@
 
         for(i=0; i < currentSelectedPart.detectionCirles.length; i++) {
           currentSelectedPart.detectionCirles[i].acceptedRotation = calcRotation(rotateRight,currentSelectedPart.detectionCirles[i].acceptedRotation);
+          colorCirclesForDebug(currentSelectedPart.detectionCirles[i]);
         }
 
         layer.draw();
+      }
+
+      var colorCirclesForDebug = function(circle) {
+      	var color = "";
+      	switch(circle.acceptedRotation) {
+      		case 0:
+      		  color = 'red';
+      		  break;
+      		case 45:
+      		  color = 'orange';
+      		  break;
+      		case 90:
+      		  color = 'green';
+      		  break;
+      		case 135:
+      		  color = 'yellow';
+      		  break;  
+      		case 180:
+      		  color = 'red';
+      		  break;
+      		case 225:
+      		  color = 'orange';
+      		  break;
+      		case 270:
+      		  color = 'green';
+      		  break;
+      		case 315:
+      		  color = 'yellow';
+      		  break;    
+      	}
+      	circle.fill(color);
       }
 
       var calcRotation = function(rotateRight,currentRotation) {
@@ -124,7 +156,12 @@
           rotation: 0,
           draggable: true,
           id: 'part_'+parts.length,
-          name: 'trackPart'
+          name: 'trackPart',
+          // set offset for rotation in the center
+          /*offset: {
+          	x: partType.width / 2, 
+          	y: partType.height / 2
+          }*/
         });
         group.detectionCirles = new Array();
 
@@ -207,6 +244,7 @@
                   // lets attach the part to the other one
                   if(distance <= 15) {
                     this.offsetX(this.detectionCirles[i].getX());
+                    this.offsetY(this.detectionCirles[i].getY());
                     //this.setRotation(part.getRotation());
                     this.setX(partPos.x-stage.getAbsolutePosition().x);
                     this.setY(partPos.y-stage.getAbsolutePosition().y);                    
