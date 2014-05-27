@@ -17,12 +17,14 @@
     <hr />
     <button href="#" onclick="rotatePart(false)">Rotate Left</button>
     <button href="#" onclick="rotatePart(true)">Rotate Right</button>
-    <button href="#" onclick="deletePart()">Rotate Right</button>
+    <button href="#" onclick="deletePart()">Delete</button>
 
     <div id="container"></div>
     <script src="kinetic-v5.1.0.min.js"></script>
     <script defer="defer">
       
+       // sequence for the part ids
+       var partIdSeq = 0;
       
       // ratio for calc is 4.62962963 * cm 
       // avaible partTypes
@@ -123,6 +125,25 @@
         layer.draw();
       }
 
+      var deletePart = function() {
+      	if(currentSelectedPart == null) {
+          return;
+        }
+        currentSelectedPart.destroyChildren();
+        currentSelectedPart.destroy();
+
+        for(i=0; i < parts.length; i++) {
+          if(parts[i].id == currentSelectedPart.id) {
+          	parts.splice(i, 1);
+          	break;
+          }
+        }
+
+        currentSelectedPart = null;
+
+        layer.draw();
+      }
+
       var colorCirclesForDebug = function(circle) {
       	var color = "";
       	switch(circle.acceptedRotation) {
@@ -154,6 +175,7 @@
       	circle.fill(color);
       }
 
+      
       var calcRotation = function(rotateRight,currentRotation) {
         if(rotateRight == true) {
           currentRotation+=45; 
@@ -184,7 +206,7 @@
           y: 0,
           rotation: 0,
           draggable: true,
-          id: 'part_'+parts.length,
+          id: 'part_'+partIdSeq++,
           name: 'trackPart',
           // set offset for rotation in the center
           /*offset: {
@@ -257,6 +279,7 @@
           for(h=0; h < parts.length; h++) {
             var part = parts[h];
             if(part.getId() != this.getId()) {
+            	console.error(part.getId());
               for(i=0; i < this.detectionCirles.length; i++) {
                 var circlPos = this.detectionCirles[i].getAbsolutePosition();
                 for(j=0; j < part.detectionCirles.length; j++) {
