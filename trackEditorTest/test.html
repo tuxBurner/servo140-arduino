@@ -317,7 +317,6 @@
           for(h=0; h < parts.length; h++) {
             var part = parts[h];
             if(part.getId() != this.getId()) {
-            	console.error(part.getId());
               for(i=0; i < this.detectionCirles.length; i++) {
                 var circlPos = this.detectionCirles[i].getAbsolutePosition();
                 for(j=0; j < part.detectionCirles.length; j++) {
@@ -341,8 +340,10 @@
                     if(this.getRotation() != circleRotation  && this.getRotation() != circleRotation2) {
                       this.setRotation(circleRotation);                      	
                     }                 
-                    this.setX(partPos.x-stage.getAbsolutePosition().x);
-                    this.setY(partPos.y-stage.getAbsolutePosition().y);                    
+                    
+
+                    this.setX((partPos.x / stage.getScale().y)-(stage.getAbsolutePosition().x / stage.getScale().y));
+                    this.setY((partPos.y / stage.getScale().y)-(stage.getAbsolutePosition().y / stage.getScale().y));                    
                   }
                 }
               }
@@ -372,10 +373,10 @@
 
 
       var zoom = function(e) {
+      	e.preventDefault();
         var zoomAmount = e.wheelDeltaY*0.001;
-        var scale = layer.getScale().y+zoomAmount;
-        layer.setScale({x: scale, y: scale});
-        console.error(layer.getScale());
+        var scale = stage.getScale().y+zoomAmount;
+        stage.setScale({x: scale, y: scale});
         layer.draw();
       }
       document.addEventListener("mousewheel", zoom, false)
