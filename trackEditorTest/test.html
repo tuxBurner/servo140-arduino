@@ -304,6 +304,12 @@
         group.setY((stage.getHeight() / 2)-stage.getAbsolutePosition().y);  
         layer.draw();
 
+        group.on('dragstart', function() {
+        	if(currentSelectedPart != null && currentSelectedPart.getId() != this.getId()) {
+        	  highlightPart(this);
+        	}
+        });	
+
         group.on('dragend', function() {
           if(parts.length == 1) {
             return;
@@ -316,7 +322,6 @@
                 var circlPos = this.detectionCirles[i].getAbsolutePosition();
                 for(j=0; j < part.detectionCirles.length; j++) {
                   var partPos = part.detectionCirles[j].getAbsolutePosition();
-                  
                   // check if the current circle accepts the rotation
                   //if(this.detectionCirles[i].acceptedRotation != part.detectionCirles[j].acceptedRotation) {
                   //  break;
@@ -329,7 +334,13 @@
                   if(distance <= 15) {
                     this.offsetX(this.detectionCirles[i].getX());
                     this.offsetY(this.detectionCirles[i].getY());
-                    //this.setRotation(part.getRotation());
+
+                    // check if to rotate the part 
+                    var circleRotation = part.detectionCirles[j].acceptedRotation;
+                    var circleRotation2 = (circleRotation2 <= 180) ? circleRotation + 180 :  circleRotation - 180;
+                    if(this.getRotation() != circleRotation  && this.getRotation() != circleRotation2) {
+                      this.setRotation(circleRotation);                      	
+                    }                 
                     this.setX(partPos.x-stage.getAbsolutePosition().x);
                     this.setY(partPos.y-stage.getAbsolutePosition().y);                    
                   }
@@ -353,7 +364,6 @@
       });
 
       var layer = new Kinetic.Layer();
-      addPart(75);
           
       // add the layer to the stage
       stage.add(layer);
