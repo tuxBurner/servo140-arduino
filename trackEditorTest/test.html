@@ -252,7 +252,7 @@
 
       var imageObj = new Image();
       imageObj.onload = function() {
-        var yoda = new Kinetic.Image({
+        var kImage = new Kinetic.Image({
           x: 0,
           y: 0,
           image: imageObj,
@@ -261,7 +261,7 @@
         });
 
         // add the shape to the layer
-        group.add(yoda);
+        group.add(kImage);
         
         // create the higlight shape
         var highlightrect = new Kinetic.Rect({
@@ -277,7 +277,6 @@
         });
         group.add(highlightrect);
         highlightPart(group);
-
         layer.draw();
       };
       imageObj.src = name+'.png';
@@ -300,8 +299,8 @@
         layer.add(group);
         parts.push(group);
 
-        group.setX((stage.getWidth() / 2)-stage.getAbsolutePosition().x);
-        group.setY((stage.getHeight() / 2)-stage.getAbsolutePosition().y);  
+        group.setX(((stage.getWidth() / 2)-stage.getAbsolutePosition().x) / stage.getScale().y);
+        group.setY(((stage.getHeight() / 2)-stage.getAbsolutePosition().y) / stage.getScale().y);  
         layer.draw();
 
         group.on('dragstart', function() {
@@ -351,7 +350,7 @@
                   var distanceY = circlPos.y - partPos.y;
                   var distance = Math.sqrt((distanceX * distanceX) + (distanceY * distanceY));
                   // lets attach the part to the other one
-                  if(distance <= 15) {
+                  if(distance <= 15 *  stage.getScale().y) {
                     this.offsetX(this.detectionCirles[i].getX());
                     this.offsetY(this.detectionCirles[i].getY());
 
