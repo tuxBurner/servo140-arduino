@@ -15,11 +15,11 @@
     <button onclick="addPart('fourthStraight');">Viertel Gerade</button>
     <button onclick="addPart('curve90');">Kurve 90°</button>
     <button onclick="addPart('curve45');">Kurve 45°</button>
+    <button href="#" onclick="exportData()">Export</button>
     <hr />
     <button href="#" onclick="rotatePart(false)">Rotate Left</button>
     <button href="#" onclick="rotatePart(true)">Rotate Right</button>
     <button href="#" onclick="deletePart()">Delete</button>
-    <button href="#" onclick="exportData()">Export</button>
 
     <div id="container"></div>
     <script src="kinetic-v5.1.0.min.js"></script>
@@ -146,6 +146,9 @@
       	if(currentSelectedPart == null) {
           return;
         }
+
+        unboundPart(currentSelectedPart);
+
         currentSelectedPart.destroyChildren();
         currentSelectedPart.destroy();
 
@@ -229,6 +232,16 @@
         layer.draw();
       }
 
+      var unboundPart = function(part) {
+          // check if any part is bounded to this part and remove the bounding from it
+          for(i=0; i < part.detectionCirles.length; i++) {
+          	  if(part.detectionCirles[i].boundTo != null) {
+          	  	part.detectionCirles[i].boundTo.boundTo = null;
+          	  	part.detectionCirles[i].boundTo = null;
+          	  }
+          }	
+      }
+
       // function for adding a new part to the tracke
       var addPart = function(name) {
 
@@ -310,13 +323,7 @@
         });	
 
         group.on('dragstart', function() {
-        	// check if any part is bounded to this part and remove the bounding from it
-          for(i=0; i < this.detectionCirles.length; i++) {
-          	  if(this.detectionCirles[i].boundTo != null) {
-          	  	this.detectionCirles[i].boundTo.boundTo = null;
-          	  	this.detectionCirles[i].boundTo = null;
-          	  }
-          }	
+        	unboundPart(this);
         });	
 
         group.on('dragend', function() {
@@ -338,13 +345,6 @@
                 // check if the draged part circles are in the sticky attach range
                 for(i=0; i < this.detectionCirles.length; i++) {
                   var circlPos = this.detectionCirles[i].getAbsolutePosition();
-                
-
-
-                  // check if the current circle accepts the rotation
-                  //if(this.detectionCirles[i].acceptedRotation != part.detectionCirles[j].acceptedRotation) {
-                  //  break;
-                  //}
 
                   var distanceX = circlPos.x - partPos.x;
                   var distanceY = circlPos.y - partPos.y;
@@ -355,11 +355,11 @@
                     this.offsetY(this.detectionCirles[i].getY());
 
                     // check if to rotate the part 
-                    var circleRotation = part.detectionCirles[j].acceptedRotation;
+                    /*var circleRotation = part.detectionCirles[j].acceptedRotation;
                     var circleRotation2 = (circleRotation2 <= 180) ? circleRotation + 180 :  circleRotation - 180;
                     if(this.getRotation() != circleRotation  && this.getRotation() != circleRotation2) {
                       this.setRotation(circleRotation);                      	
-                    }                 
+                    } */                
                     
 
                     this.setX((partPos.x / stage.getScale().y)-(stage.getAbsolutePosition().x / stage.getScale().y));
