@@ -14,10 +14,12 @@
     <button onclick="addPart('thirdStraight');">Drittel Gerade</button>
     <button onclick="addPart('fourthStraight');">Viertel Gerade</button>
     <button onclick="addPart('curve90');">Kurve 90°</button>
+    <button onclick="addPart('curve45');">Kurve 45°</button>
     <hr />
     <button href="#" onclick="rotatePart(false)">Rotate Left</button>
     <button href="#" onclick="rotatePart(true)">Rotate Right</button>
     <button href="#" onclick="deletePart()">Delete</button>
+    <button href="#" onclick="exportData()">Export</button>
 
     <div id="container"></div>
     <script src="kinetic-v5.1.0.min.js"></script>
@@ -99,6 +101,21 @@
             acceptedRotation: 90
            }
            ]
+        },
+        curve45 : {
+          width: 82,
+          height: 79,
+          connections: [
+            {
+            x: 0,
+            y: 33.33,
+            acceptedRotation: 0
+            },{
+            x: 58,
+            y: 55,
+            acceptedRotation: 45
+           }
+           ]
         } 
       };
 
@@ -142,6 +159,11 @@
         currentSelectedPart = null;
 
         layer.draw();
+      }
+
+      var exportData = function() {
+      	var json = stage.toJSON();
+        console.log(json);
       }
 
       var colorCirclesForDebug = function(circle) {
@@ -192,6 +214,21 @@
         return currentRotation;
       }
 
+      var highlightPart = function(partGroup) {
+      	if(currentSelectedPart != null) {
+      		currentSelectedPart.find('.highlight').hide();
+      	}
+   
+        // deselect the current part
+        if(currentSelectedPart != null && currentSelectedPart.getId() == partGroup.getId()) {
+          currentSelectedPart = null;
+        } else {
+          currentSelectedPart = partGroup;
+          currentSelectedPart.find('.highlight').show();
+        }
+        layer.draw();
+      }
+
       // function for adding a new part to the tracke
       var addPart = function(name) {
 
@@ -208,24 +245,10 @@
           draggable: true,
           id: 'part_'+partIdSeq++,
           name: 'trackPart',
-          // set offset for rotation in the center
-          /*offset: {
-          	x: partType.width / 2, 
-          	y: partType.height / 2
-          }*/
+          trackPartType: partType
         });
         group.detectionCirles = new Array();
-
-        /*var rect = new Kinetic.Rect({
-          x: 0,
-          y: 0,
-          width: partType.width,
-          height: partType.height,
-          fill: 'green',
-          stroke: 'black',
-          strokeWidth: 1                    
-        });
-        group.add(rect);*/
+        
 
       var imageObj = new Image();
       imageObj.onload = function() {
@@ -239,13 +262,25 @@
 
         // add the shape to the layer
         group.add(yoda);
-        layer.draw();
+        
+        // create the higlight shape
+        var highlightrect = new Kinetic.Rect({
+          x: 0,
+          y: 0,
+          width: partType.width,
+          height: partType.height,
+          fill: 'green',
+          stroke: 'black',
+          strokeWidth: 1,
+          name: 'highlight',
+          opacity: 0.5                    
+        });
+        group.add(highlightrect);
+        highlightPart(group);
 
-        // add the layer to the stage
-        //stage.add(layer);
+        layer.draw();
       };
       imageObj.src = name+'.png';
-
         
         // add the connection points
         for(i=0; i< partType.connections.length; i++) {
@@ -258,7 +293,6 @@
             strokeWidth: 1
           });
           circle.acceptedRotation = partType.connections[i].acceptedRotation; 
-          //circle.partPosX = 0;
           group.add(circle);
           group.detectionCirles.push(circle);
         }
@@ -268,8 +302,6 @@
 
         group.setX((stage.getWidth() / 2)-stage.getAbsolutePosition().x);
         group.setY((stage.getHeight() / 2)-stage.getAbsolutePosition().y);  
-        currentSelectedPart = group;
-
         layer.draw();
 
         group.on('dragend', function() {
@@ -309,7 +341,7 @@
         });
 
        group.on('click',function() {
-         currentSelectedPart = this;
+         highlightPart(this);
        });
       }
 
@@ -326,15 +358,17 @@
       // add the layer to the stage
       stage.add(layer);
 
+      
 
-      /*var zoom = function(e) {
+
+      var zoom = function(e) {
         var zoomAmount = e.wheelDeltaY*0.001;
         var scale = layer.getScale().y+zoomAmount;
         layer.setScale({x: scale, y: scale});
         console.error(layer.getScale());
         layer.draw();
       }
-      document.addEventListener("mousewheel", zoom, false)*/
+      document.addEventListener("mousewheel", zoom, false)
     </script>
   </body>
 </html>
