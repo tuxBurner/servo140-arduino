@@ -310,6 +310,16 @@
         	}
         });	
 
+        group.on('dragstart', function() {
+        	// check if any part is bounded to this part and remove the bounding from it
+          for(i=0; i < this.detectionCirles.length; i++) {
+          	  if(this.detectionCirles[i].boundTo != null) {
+          	  	this.detectionCirles[i].boundTo.boundTo = null;
+          	  	this.detectionCirles[i].boundTo = null;
+          	  }
+          }	
+        });	
+
         group.on('dragend', function() {
           if(parts.length == 1) {
             return;
@@ -317,10 +327,21 @@
           for(h=0; h < parts.length; h++) {
             var part = parts[h];
             if(part.getId() != this.getId()) {
-              for(i=0; i < this.detectionCirles.length; i++) {
-                var circlPos = this.detectionCirles[i].getAbsolutePosition();
-                for(j=0; j < part.detectionCirles.length; j++) {
-                  var partPos = part.detectionCirles[j].getAbsolutePosition();
+              for(j=0; j < part.detectionCirles.length; j++) {
+                
+                // check if the part circle is already bound 
+                if(part.detectionCirles[j].boundTo != null) {
+                  continue;
+                }
+
+                var partPos = part.detectionCirles[j].getAbsolutePosition();
+                
+                // check if the draged part circles are in the sticky attach range
+                for(i=0; i < this.detectionCirles.length; i++) {
+                  var circlPos = this.detectionCirles[i].getAbsolutePosition();
+                
+
+
                   // check if the current circle accepts the rotation
                   //if(this.detectionCirles[i].acceptedRotation != part.detectionCirles[j].acceptedRotation) {
                   //  break;
@@ -343,7 +364,11 @@
                     
 
                     this.setX((partPos.x / stage.getScale().y)-(stage.getAbsolutePosition().x / stage.getScale().y));
-                    this.setY((partPos.y / stage.getScale().y)-(stage.getAbsolutePosition().y / stage.getScale().y));                    
+                    this.setY((partPos.y / stage.getScale().y)-(stage.getAbsolutePosition().y / stage.getScale().y));
+
+                    // mark the track part ends bounded 
+                    part.detectionCirles[j].boundTo = this.detectionCirles[i];
+                    this.detectionCirles[i].boundTo = part.detectionCirles[j];
                   }
                 }
               }
