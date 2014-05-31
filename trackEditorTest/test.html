@@ -9,6 +9,7 @@
     </style>
   </head>
   <body>
+    <button onclick="addPart('connectStraight');">Anschluss Gerade</button>
     <button onclick="addPart('straight');">Std Gerade</button>
     <button onclick="addPart('dblStraight');">Doppel Gerade</button>
     <button onclick="addPart('thirdStraight');">Drittel Gerade</button>
@@ -34,62 +35,6 @@
       // ratio for calc is 4.62962963 * cm 
       // avaible partTypes
       var partTypes = {
-        straight : {
-          width: 100,
-          height: 66.66,
-          connections: [
-            {x: 0,
-            y: 33.33,
-            acceptedRotation: 0
-            },{
-              x: 100,
-              y: 33.33,
-            acceptedRotation: 0
-            }
-          ]  
-        },
-        dblStraight : {
-          width: 200,
-          height: 66.66,
-          connections: [
-            {x: 0,
-            y: 33.33,
-            acceptedRotation: 0
-            },{
-              x: 200,
-              y: 33.33,
-            acceptedRotation: 0
-            }
-          ]  
-        },
-        thirdStraight : {
-          width: 33.33,
-          height: 66.66,
-          connections: [
-            {x: 0,
-            y: 33.33,
-            acceptedRotation: 0
-            },{
-              x: 33.33,
-              y: 33.33,
-            acceptedRotation: 0
-            }
-          ]  
-        },
-        fourthStraight : {
-          width: 25,
-          height: 66.66,
-          connections: [
-            {x: 0,
-            y: 33.33,
-            acceptedRotation: 0
-            },{
-              x: 25,
-              y: 33.33,
-            acceptedRotation: 0
-            }
-          ]  
-        },
         curve90 : {
           width: 112.96,
           height: 112.96,
@@ -121,6 +66,43 @@
            ]
         } 
       };
+
+       var createStraight = function(width,height,fillColor) {
+      	var halfHeight = height / 2;
+        return {
+          width: width,
+          height: height,
+          connections: [
+            {x: 0,
+            y: halfHeight,
+            acceptedRotation: 0
+            },{
+              x: width,
+              y: halfHeight,
+            acceptedRotation: 0
+            }
+          ],
+          paths: [ {
+              path: "M0,0 "+width+",0 "+width+","+height+" 0,"+height+" Z",
+              fill: fillColor,
+              stroke: "white",
+              strokeWidth: 1  
+            },
+            {
+              path: "M0,"+halfHeight+" L "+width+","+halfHeight,
+              stroke: "white",
+              strokeWidth: 4	
+            }
+          ]  
+        }
+      }
+
+      partTypes['straight'] = createStraight(100,66.66,'black');
+      partTypes['dblStraight'] = createStraight(200,66.66,'black');
+      partTypes['connectStraight'] = createStraight(200,66.66,'gray');
+      partTypes['thirdStraight'] = createStraight(33.33,66.66,'black');
+      partTypes['fourthStraight'] = createStraight(25,66.66,'black');
+     
 
       // list of parts avaible
       var parts = Array();
@@ -215,7 +197,7 @@
       		  break;    
       	}
       	circle.fill(color);
-      	circle.setOpacity(1);
+      	circle.setOpacity(0);
       }
 
       
@@ -293,6 +275,43 @@
         });
         group.detectionCirles = new Array();
         
+        if(partType.paths != null) {
+        	var pathGroup = new Kinetic.Group({
+              x: 0,
+              y: 0   
+        	});
+
+        	for(i=0; i < partType.paths.length; i++) {
+        		var pathInfo = partType.paths[i];
+        		var kPath = new Kinetic.Path({
+                  x: 0,
+                  y: 0,
+                  data: pathInfo.path,
+                  fill: pathInfo.fill,
+                  stroke: pathInfo.stroke,
+                  strokeWidth: pathInfo.strokeWidth
+                });
+        		pathGroup.add(kPath);
+        	}
+
+        	group.add(pathGroup);
+
+        	// create the higlight shape
+        var highlightrect = new Kinetic.Rect({
+          x: 0,
+          y: 0,
+          width: partType.width,
+          height: partType.height,
+          fill: 'green',
+          stroke: 'black',
+          strokeWidth: 1,
+          name: 'highlight',
+          opacity: 0.5                    
+        });
+        group.add(highlightrect);
+        highlightPart(group);
+        	layer.draw();
+        } else { 
 
       var imageObj = new Image();
       imageObj.onload = function() {
@@ -324,6 +343,7 @@
         layer.draw();
       };
       imageObj.src = partName+'.png';
+  }
         
         // add the connection points
         for(i=0; i< partType.connections.length; i++) {
