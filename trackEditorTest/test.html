@@ -15,11 +15,11 @@
     <button onclick="addPart('fourthStraight');">Viertel Gerade</button>
     <button onclick="addPart('curve90');">Kurve 90°</button>
     <button onclick="addPart('curve45');">Kurve 45°</button>
-    <button href="#" onclick="exportData()">Export</button>
+    <button href="#" onclick="exportData(function(data){ console.error(data); })">Export</button>
     <hr />
     <button href="#" onclick="rotatePart(false)">Rotate Left</button>
     <button href="#" onclick="rotatePart(true)">Rotate Right</button>
-    <button href="#" onclick="deletePart()">Delete</button>
+    <button href="#" onclick="deletePart(function(data,dataUrl) { console.error(data); })">Delete</button>
 
     <div id="container"></div>
     <script src="kinetic-v5.1.0.min.js"></script>
@@ -27,6 +27,9 @@
       
        // sequence for the part ids
        var partIdSeq = 0;
+
+       // stores if a circle is bounded or not.
+       var boundedInfos = new Object();
       
       // ratio for calc is 4.62962963 * cm 
       // avaible partTypes
@@ -134,15 +137,18 @@
         var currentRotation = calcRotation(rotateRight,currentSelectedPart.getRotation());
         currentSelectedPart.setRotation(currentRotation);
 
-        for(i=0; i < currentSelectedPart.detectionCirles.length; i++) {
-          currentSelectedPart.detectionCirles[i].acceptedRotation = calcRotation(rotateRight,currentSelectedPart.detectionCirles[i].acceptedRotation);
-          colorCirclesForDebug(currentSelectedPart.detectionCirles[i]);
-        }
-
+        rotateCircles(currentSelectedPart,rotateRight);
         layer.draw();
       }
 
-      var deletePart = function() {
+      var rotateCircles = function(part, rotateRight) {
+      	for(i=0; i < part.detectionCirles.length; i++) {
+          part.detectionCirles[i].acceptedRotation = calcRotation(rotateRight,part.detectionCirles[i].acceptedRotation);
+          colorCirclesForDebug(part.detectionCirles[i]);
+        }
+      }
+
+      var deletePart = function(callback) {
       	if(currentSelectedPart == null) {
           return;
         }
@@ -159,14 +165,25 @@
           }
         }
 
+        if(callback != undefined) {
+          callback(currentSelectedPart)
+        }
+
         currentSelectedPart = null;
 
         layer.draw();
       }
 
-      var exportData = function() {
-      	var json = stage.toJSON();
-        console.log(json);
+      var exportData = function(callback) {
+      	if(callback != undefined) {
+      	    stage.toDataURL({
+          callback: function(dataUrl) {
+              var json = stage.toJSON();
+      	     callback(json,dataUrl);
+           }
+          });
+      	 
+        }
       }
 
       var colorCirclesForDebug = function(circle) {
@@ -217,6 +234,16 @@
         return currentRotation;
       }
 
+      var calcRotationForPoints = function(part,newRotation,oldRotation) {
+        var rotatetDegress = (newRotation > oldRotation) ? newRotation - oldRotation : oldRotation - newRotation;
+        // which direction 
+        var direction = (newRotation > oldRotation);
+        var steps = rotatetDegress / 45;
+        for(i=0; i < steps; i++) {
+          rotateCircles(part,direction); 
+        }
+      }
+
       var highlightPart = function(partGroup) {
       	if(currentSelectedPart != null) {
       		currentSelectedPart.find('.highlight').hide();
@@ -235,30 +262,33 @@
       var unboundPart = function(part) {
           // check if any part is bounded to this part and remove the bounding from it
           for(i=0; i < part.detectionCirles.length; i++) {
-          	  if(part.detectionCirles[i].boundTo != null) {
-          	  	part.detectionCirles[i].boundTo.boundTo = null;
-          	  	part.detectionCirles[i].boundTo = null;
+          	  var boundInfo = boundedInfos[part.detectionCirles[i].getId()]; 
+          	  if(boundInfo != null) {
+          	  	boundedInfos[boundInfo] = null;
+          	  	boundedInfos[part.detectionCirles[i].getId()] = null;
           	  }
           }	
       }
 
       // function for adding a new part to the tracke
-      var addPart = function(name) {
+      var addPart = function(partName) {
 
-        if(partTypes[name] == null) {
+        if(partTypes[partName] == null) {
           return;
         }
 
-        var partType = partTypes[name];
+        var partType = partTypes[partName];
         
+        var partId = partIdSeq++;
+
         var group = new Kinetic.Group({
           x: 0,
           y: 0,
           rotation: 0,
           draggable: true,
-          id: 'part_'+partIdSeq++,
+          id: 'part_'+partId,
           name: 'trackPart',
-          trackPartType: partType
+          trackPartType: partName
         });
         group.detectionCirles = new Array();
         
@@ -292,7 +322,7 @@
         highlightPart(group);
         layer.draw();
       };
-      imageObj.src = name+'.png';
+      imageObj.src = partName+'.png';
         
         // add the connection points
         for(i=0; i< partType.connections.length; i++) {
@@ -300,11 +330,12 @@
             x: partType.connections[i].x,
             y: partType.connections[i].y,
             radius: 10,
-            fill: 'red',
             stroke: 'black',
-            strokeWidth: 1
+            strokeWidth: 1,
+            id: 'circle_'+partId+'_'+i
           });
           circle.acceptedRotation = partType.connections[i].acceptedRotation; 
+          colorCirclesForDebug(circle);
           group.add(circle);
           group.detectionCirles.push(circle);
         }
@@ -336,7 +367,7 @@
               for(j=0; j < part.detectionCirles.length; j++) {
                 
                 // check if the part circle is already bound 
-                if(part.detectionCirles[j].boundTo != null) {
+                if(boundedInfos[part.detectionCirles[j].getId()] != null) {
                   continue;
                 }
 
@@ -358,16 +389,17 @@
                     /*var circleRotation = part.detectionCirles[j].acceptedRotation;
                     var circleRotation2 = (circleRotation2 <= 180) ? circleRotation + 180 :  circleRotation - 180;
                     if(this.getRotation() != circleRotation  && this.getRotation() != circleRotation2) {
-                      this.setRotation(circleRotation);                      	
-                    } */                
+                      calcRotationForPoints(this,circleRotation,this.getRotation());  
+                      this.setRotation(circleRotation);
+                    } */               
                     
 
                     this.setX((partPos.x / stage.getScale().y)-(stage.getAbsolutePosition().x / stage.getScale().y));
                     this.setY((partPos.y / stage.getScale().y)-(stage.getAbsolutePosition().y / stage.getScale().y));
 
-                    // mark the track part ends bounded 
-                    part.detectionCirles[j].boundTo = this.detectionCirles[i];
-                    this.detectionCirles[i].boundTo = part.detectionCirles[j];
+                    // mark the track part ends bounded
+                    boundedInfos[this.detectionCirles[i].getId()] = part.detectionCirles[j].getId();
+                    boundedInfos[part.detectionCirles[j].getId()] = this.detectionCirles[i].getId();
                   }
                 }
               }
