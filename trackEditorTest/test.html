@@ -31,6 +31,23 @@
 
        // stores if a circle is bounded or not.
        var boundedInfos = new Object();
+
+       //http://stackoverflow.com/a/18473154/3058835
+       function polarToCartesian(centerX, centerY, radius, angleInDegrees) {
+         var angleInRadians = (angleInDegrees-90) * Math.PI / 180.0;
+
+         return {
+           x: centerX + (radius * Math.cos(angleInRadians)),
+           y: centerY + (radius * Math.sin(angleInRadians))
+          };
+       }
+
+       function describeArc(x, y, radius, startAngle, endAngle){
+          var start = polarToCartesian(x, y, radius, endAngle);
+          var end = polarToCartesian(x, y, radius, startAngle);
+          var arcSweep = endAngle - startAngle <= 180 ? "0" : "1";
+          return "M"+start.x+","+start.y+" A"+radius+","+radius+" 0 "+arcSweep+" 0 "+ end.x+","+end.y;       
+       }
       
       // ratio for calc is 4.62962963 * cm 
       // avaible partTypes
@@ -50,28 +67,39 @@
            }
            ],
            paths: [{
-           	path: "M0,33.33	Q79.63,33.33 79.63,112.96",
+           	path: describeArc(0, 112.96, 79.63, 0, 90),
            	stroke: "black",
            	strokeWidth: 66.66
            }, {
-             path: "M0,33.33 Q79.63,33.33 79.63,112.96",           
+             path: describeArc(0, 112.96, 79.63, 0, 90),           
            	stroke: "white",
            	strokeWidth: 4
            }
            ]
         },
         curve45 : {
-          width: 82,
-          height: 79,
+          width: 79.63,
+          height: 79.63,
           connections: [
             {
             x: 0,
             y: 33.33,
             acceptedRotation: 0
             },{
-            x: 58,
-            y: 55,
+            x: 56,
+            y: 57,
             acceptedRotation: 45
+           }
+           ],
+           paths: [{
+           	path: describeArc(0, 112.96, 79.63, 0, 45),
+           	stroke: "black",
+           	strokeWidth: 66.66
+           },
+           {
+           	path: describeArc(0, 112.96, 79.63, 0, 45),
+           	stroke: "white",
+           	strokeWidth: 4
            }
            ]
         } 
@@ -207,7 +235,7 @@
       		  break;    
       	}
       	circle.fill(color);
-      	circle.setOpacity(0);
+      	circle.setOpacity(1);
       }
 
       
