@@ -334,18 +334,20 @@
 
         	group.add(pathGroup);
 
-        	// create the higlight shape
-        var highlightrect = new Kinetic.Rect({
-          x: 0,
-          y: 0,
-          width: partType.width,
-          height: partType.height,
-          fill: 'green',
-          stroke: 'black',
-          strokeWidth: 1,
-          name: 'highlight',
-          opacity: 0.5                    
-        });
+
+            var pathInfo = partType.paths[0];
+            var highlightrect = new Kinetic.Path({
+              x: 0,
+              y: 0,
+              fill: 'green',
+              stroke: 'green',
+              strokeWidth: pathInfo.strokeWidth,
+              data: pathInfo.path,
+              name: 'highlight',
+              opacity: 0.5           
+            });	
+
+        	
         group.add(highlightrect);
         highlightPart(group);
         	layer.draw();
