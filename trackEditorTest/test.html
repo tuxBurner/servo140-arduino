@@ -18,15 +18,18 @@
     <button onclick="addPart('curve45');">Kurve 45°</button>
     <button href="#" onclick="exportData(function(data){ console.error(data); })">Export</button>
     <hr />
-    <button  class="selected_part_btn" disabled="disabled" href="#" onclick="rotatePart(false)">Rotate Left</button>
-    <button  class="selected_part_btn" disabled="disabled" href="#" onclick="rotatePart(true)">Rotate Right</button>
-    <button  class="selected_part_btn" disabled="disabled" href="#" onclick="moveToLayer(0)">Move To Layer 1</button>
-    <button  class="selected_part_btn" disabled="disabled" href="#" onclick="moveToLayer(1)">Move To Layer 2</button>
-    <button  class="selected_part_btn" disabled="disabled" href="#" onclick="deletePart(function(data,dataUrl) { console.error(data); })">Delete</button>
+    <button  class="selected_part_btn" disabled href="#" onclick="rotatePart(false)">Rotate Left</button>
+    <button  class="selected_part_btn" disabled href="#" onclick="rotatePart(true)">Rotate Right</button>
+    <button  class="selected_part_btn" disabled href="#" onclick="moveToLayer(0)">Move To Layer 1</button>
+    <button  class="selected_part_btn" disabled href="#" onclick="moveToLayer(1)">Move To Layer 2</button>
+    <button  class="selected_part_btn" disabled href="#" onclick="deletePart(function(data,dataUrl) { console.error(data); })">Delete</button>
 
     <div id="container"></div>
     <script src="kinetic-v5.1.0.min.js"></script>
     <script defer="defer">
+
+      // stores all buttons in the html
+      var buttons = null;
       
        // sequence for the part ids
        var partIdSeq = 0;
@@ -209,6 +212,8 @@
           callback(currentSelectedPart)
         }
 
+        enableDisableTrackPartButton(false);
+
         currentSelectedPart = null;
 
         layer.draw();
@@ -293,11 +298,22 @@
         // deselect the current part
         if(currentSelectedPart != null && currentSelectedPart.getId() == partGroup.getId()) {
           currentSelectedPart = null;
+          enableDisableTrackPartButton(false);
         } else { 	
           currentSelectedPart = partGroup;
           currentSelectedPart.find('.highlight').show();
+          enableDisableTrackPartButton(true);
         }
         layer.draw();
+      }
+
+      var enableDisableTrackPartButton = function(enable){
+      	if(buttons == null) {
+      		buttons = document.getElementsByClassName('selected_part_btn'); 
+      	}
+      	for(button in buttons) {
+          	buttons[button].disabled = !enable;
+          }
       }
 
       var unboundPart = function(part) {
@@ -400,14 +416,12 @@
         layer.draw();
 
         group.on('dragstart', function() {
+        	unboundPart(this);
         	if(currentSelectedPart != null && currentSelectedPart.getId() != this.getId()) {
         	  highlightPart(this);
         	}
         });	
-
-        group.on('dragstart', function() {
-        	unboundPart(this);
-        });	
+	
 
         group.on('dragend', function() {
           if(parts.length == 1) {
