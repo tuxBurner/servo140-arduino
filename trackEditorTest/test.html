@@ -18,9 +18,11 @@
     <button onclick="addPart('curve45');">Kurve 45°</button>
     <button href="#" onclick="exportData(function(data){ console.error(data); })">Export</button>
     <hr />
-    <button href="#" onclick="rotatePart(false)">Rotate Left</button>
-    <button href="#" onclick="rotatePart(true)">Rotate Right</button>
-    <button href="#" onclick="deletePart(function(data,dataUrl) { console.error(data); })">Delete</button>
+    <button  class="selected_part_btn" disabled="disabled" href="#" onclick="rotatePart(false)">Rotate Left</button>
+    <button  class="selected_part_btn" disabled="disabled" href="#" onclick="rotatePart(true)">Rotate Right</button>
+    <button  class="selected_part_btn" disabled="disabled" href="#" onclick="moveToLayer(0)">Move To Layer 1</button>
+    <button  class="selected_part_btn" disabled="disabled" href="#" onclick="moveToLayer(1)">Move To Layer 2</button>
+    <button  class="selected_part_btn" disabled="disabled" href="#" onclick="deletePart(function(data,dataUrl) { console.error(data); })">Delete</button>
 
     <div id="container"></div>
     <script src="kinetic-v5.1.0.min.js"></script>
@@ -28,6 +30,15 @@
       
        // sequence for the part ids
        var partIdSeq = 0;
+
+       var avaibleParts = {
+       	curve90: 10,
+       	curve45: 4,
+       	straight: 20,
+       	dblStraight: 30,
+       	thirdStraight: 4,
+       	fourthStraight: 3
+       }
 
        // stores if a circle is bounded or not.
        var boundedInfos = new Object();
@@ -105,6 +116,8 @@
         } 
       };
 
+
+
        var createStraight = function(width,height,fillColor) {
       	var halfHeight = height / 2;
         return {
@@ -148,6 +161,13 @@
       // the currently selected part
       var currentSelectedPart = null;
 
+      var moveToLayer = function(layer) {
+      	if(currentSelectedPart == null) {
+      		return;
+      	}
+      	currentSelectedPart.setZIndex(layer);
+      }   
+       
       // rotates the current selected part
       var rotatePart = function(rotateRight) {
         if(currentSelectedPart == null) {
@@ -273,7 +293,7 @@
         // deselect the current part
         if(currentSelectedPart != null && currentSelectedPart.getId() == partGroup.getId()) {
           currentSelectedPart = null;
-        } else {
+        } else { 	
           currentSelectedPart = partGroup;
           currentSelectedPart.find('.highlight').show();
         }
@@ -283,10 +303,13 @@
       var unboundPart = function(part) {
           // check if any part is bounded to this part and remove the bounding from it
           for(i=0; i < part.detectionCirles.length; i++) {
-          	  var boundInfo = boundedInfos[part.detectionCirles[i].getId()]; 
-          	  if(boundInfo != null) {
-          	  	boundedInfos[boundInfo] = null;
+          	  var boundedCircle = boundedInfos[part.detectionCirles[i].getId()]; 
+          	  if(boundedCircle != null) {
+                boundedCircle.show();
+          	  	boundedInfos[boundedCircle.getId()] = null;
           	  	boundedInfos[part.detectionCirles[i].getId()] = null;
+          	  	part.detectionCirles[i].show();
+          	  	layer.draw();
           	  }
           }	
       }
@@ -313,7 +336,7 @@
         });
         group.detectionCirles = new Array();
         
-        if(partType.paths != null) {
+        
         	var pathGroup = new Kinetic.Group({
               x: 0,
               y: 0   
@@ -351,39 +374,7 @@
         group.add(highlightrect);
         highlightPart(group);
         	layer.draw();
-        } else { 
-
-      var imageObj = new Image();
-      imageObj.onload = function() {
-        var kImage = new Kinetic.Image({
-          x: 0,
-          y: 0,
-          image: imageObj,
-          width: partType.width,
-          height: partType.height
-        });
-
-        // add the shape to the layer
-        group.add(kImage);
-        
-        // create the higlight shape
-        var highlightrect = new Kinetic.Rect({
-          x: 0,
-          y: 0,
-          width: partType.width,
-          height: partType.height,
-          fill: 'green',
-          stroke: 'black',
-          strokeWidth: 1,
-          name: 'highlight',
-          opacity: 0.5                    
-        });
-        group.add(highlightrect);
-        highlightPart(group);
-        layer.draw();
-      };
-      imageObj.src = partName+'.png';
-  }
+         
         
         // add the connection points
         for(i=0; i< partType.connections.length; i++) {
@@ -459,8 +450,10 @@
                     this.setY((partPos.y / stage.getScale().y)-(stage.getAbsolutePosition().y / stage.getScale().y));
 
                     // mark the track part ends bounded
-                    boundedInfos[this.detectionCirles[i].getId()] = part.detectionCirles[j].getId();
-                    boundedInfos[part.detectionCirles[j].getId()] = this.detectionCirles[i].getId();
+                    part.detectionCirles[j].hide();
+                    this.detectionCirles[i].hide();
+                    boundedInfos[this.detectionCirles[i].getId()] = part.detectionCirles[j];
+                    boundedInfos[part.detectionCirles[j].getId()] = this.detectionCirles[i];
                   }
                 }
               }
