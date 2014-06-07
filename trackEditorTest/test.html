@@ -16,6 +16,7 @@
     <button onclick="addPart('fourthStraight');">Viertel Gerade</button>
     <button onclick="addPart('curve90');">Kurve 90°</button>
     <button onclick="addPart('curve45');">Kurve 45°</button>
+    <button onclick="addPart('curve452');">Kurve 45° 2</button>
     <button href="#" onclick="exportData(function(data){ console.error(data); })">Export</button>
     <hr />
     <button  class="selected_part_btn" disabled href="#" onclick="rotatePart(false)">Rotate Left</button>
@@ -116,6 +117,32 @@
            	strokeWidth: 4
            }
            ]
+        },
+        curve452 : {
+          width:  159.26,
+          height:  159.26,
+          connections: [
+            {
+            x: 0,
+            y: 66.66,
+            acceptedRotation: 0
+            },{
+            x: 112,
+            y: 114,
+            acceptedRotation: 45
+           }
+           ],
+           paths: [{
+           	path: describeArc(0, 225.92, 159.26, 0, 45),
+           	stroke: "black",
+           	strokeWidth: 66.66
+           },
+           {
+           	path: describeArc(0, 225.92, 159.26, 0, 45),
+           	stroke: "white",
+           	strokeWidth: 4
+           }
+           ]
         } 
       };
 
@@ -123,6 +150,7 @@
 
        var createStraight = function(width,height,fillColor) {
       	var halfHeight = height / 2;
+      	var quaterHeight = halfHeight / 2;
         return {
           width: width,
           height: height,
