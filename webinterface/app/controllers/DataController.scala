@@ -1,9 +1,12 @@
 package controllers
 
+import com.google.gson.Gson
+import play.api.Logger
 import play.api.mvc.{Action, Controller}
 import neo4j.Neo4JServiceProvider
 import org.springframework.data.domain.Sort
 import neo4j.models.{NeoTrackParts, CarType, ImageNeoNode, NeoTrack}
+import play.api.templates.Html
 import plugins.jsAnnotations.JSRoute
 import scala.collection.JavaConverters._
 import play.api.i18n.Messages
@@ -100,6 +103,19 @@ object DataController extends Controller {
           Redirect(routes.DataController.mainDataView("tracks")).flashing(BaseController.FLASH_SUCCESS_KEY -> Messages("track.edit.success", neoTrack.name));
         }
       )
+  }
+
+  def displayTrackEditor(id: Long) = Neo4jTransactionAction {
+    implicit request =>
+      val neoTrack = Neo4JServiceProvider.get().trackRepo.findOne(id)
+      if(neoTrack == null) {
+        Redirect(routes.DataController.mainDataView("tracks"))
+      } else {
+        val neoTrackParts = Neo4JServiceProvider.get().trackPartsRepo.findAll().asScala.headOption.getOrElse(new NeoTrackParts);
+
+        val trackPartsAsJson = new Html(new StringBuilder(new Gson().toJson(Forms.neoTrackPartsToTrackParts(neoTrackParts))));
+        Ok(views.html.data.track.trackEditor(neoTrack,trackPartsAsJson))
+      }
   }
 
   /**

@@ -1,35 +1,7 @@
-<!DOCTYPE HTML>
-<html>
-<head>
-    <style>
-        body {
-            margin: 0px;
-            padding: 0px;
-        }
-    </style>
-</head>
-<body>
-<button onclick="addPart('connectStraight');">Anschluss Gerade</button>
-<button onclick="addPart('straight');">Std Gerade</button>
-<button onclick="addPart('dblStraight');">Doppel Gerade</button>
-<button onclick="addPart('thirdStraight');">Drittel Gerade</button>
-<button onclick="addPart('fourthStraight');">Viertel Gerade</button>
-<button onclick="addPart('curve90');">Kurve 90°</button>
-<button onclick="addPart('curve45');">Kurve 45°</button>
-<button onclick="addPart('curve452');">Kurve 45° 2</button>
-<button href="#" onclick="exportData(function(data){ console.error(data); })">Export</button>
-<hr/>
-<button class="selected_part_btn" disabled href="#" onclick="rotatePart(false)">Rotate Left</button>
-<button class="selected_part_btn" disabled href="#" onclick="rotatePart(true)">Rotate Right</button>
-<button class="selected_part_btn" disabled href="#" onclick="moveToLayer(0)">Move To Layer 1</button>
-<button class="selected_part_btn" disabled href="#" onclick="moveToLayer(1)">Move To Layer 2</button>
-<button class="selected_part_btn" disabled href="#"
-        onclick="deletePart(function(data,dataUrl) { console.error(data); })">Delete
-</button>
+/**
+ * Created by tuxburner on 6/10/14.
+ */
 
-<div id="container"></div>
-<script src="kinetic-v5.1.0.min.js"></script>
-<script defer="defer">
 
 // stores all buttons in the html
 var buttons = null;
@@ -37,14 +9,6 @@ var buttons = null;
 // sequence for the part ids
 var partIdSeq = 0;
 
-var avaibleParts = {
-    curve90: 10,
-    curve45: 4,
-    straight: 20,
-    dblStraight: 30,
-    thirdStraight: 4,
-    fourthStraight: 3
-}
 
 // stores if a circle is bounded or not.
 var boundedInfos = new Object();
@@ -158,7 +122,6 @@ var partTypes = {
 
 var createStraight = function (width, height, fillColor) {
     var halfHeight = height / 2;
-    var quaterHeight = halfHeight / 2;
     return {
         width: width,
         height: height,
@@ -520,9 +483,9 @@ var addPart = function (partName) {
 }
 
 var stage = new Kinetic.Stage({
-    container: 'container',
-    width: window.innerWidth,
-    height: window.innerHeight - 100,
+    container: 'trackEditorContainer',
+    width: window.innerWidth - 350,
+    height: window.innerHeight - 200,
     draggable: true
 });
 
@@ -540,6 +503,12 @@ var zoom = function (e) {
     layer.draw();
 }
 document.addEventListener("mousewheel", zoom, false)
-</script>
-</body>
-</html>
+
+// TODO REMOVE from here :)
+$(function() {
+    $.each(avaibleParts,function(i,obj) {
+        if(obj > 0) {
+            $('#trackEditorPartsBtns').append('<button class="btn" onclick="addPart(\'' + i + '\');">' + i + '</button>');
+        }
+    });
+})

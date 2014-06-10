@@ -1,5 +1,6 @@
 package controllers
 
+import neo4j.models.NeoTrackParts
 import play.api.data._
 import play.api.data.Forms._
 
@@ -36,6 +37,7 @@ case class Car(carType: String, imageName: ImageName)
  */
 case class TrackParts(straight: Int, dblStraight: Int, fourthStraight: Int, thirdStraight: Int, curve90: Int, curve45: Int, curve452: Int, connectStraight: Int)
 
+
 object Forms {
 
   val imageNameMapping = mapping(
@@ -70,4 +72,8 @@ object Forms {
       "connectStraight" -> number(0))
       (TrackParts.apply)(TrackParts.unapply)
   )
+
+  def neoTrackPartsToTrackParts(neoTrackParts: NeoTrackParts): TrackParts  = {
+    TrackParts.apply(neoTrackParts.straight,neoTrackParts.dblStraight,neoTrackParts.fourthStraight,neoTrackParts.thirdStraight,neoTrackParts.curve90,neoTrackParts.curve45,neoTrackParts.curve452,neoTrackParts.connectStraight)
+  }
 }

@@ -1,0 +1,31 @@
+@(track: neo4j.models.NeoTrack, trackPartsAsJson: Html)(implicit request: play.api.mvc.Request[play.api.mvc.AnyContent])
+
+    @scripts = {
+        <script type="text/javascript">
+        var avaibleParts = @trackPartsAsJson ;
+        </script>
+        <script type='text/javascript' src='@routes.Assets.at("javascripts/kinetic-v5.1.0.min.js")'></script>
+        <script type='text/javascript' src='@routes.Assets.at("javascripts/trackeditor.min.js")'></script>
+    }
+
+@main(Messages("trackEditor"), scripts) {
+    <div class="row">
+        <div class="col-md-12" id="trackEditorPartsBtns">
+            <button href="#" onclick="exportData ( function ( data,dataUrl) { console.error ( dataUrl) ; } )">Export</button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12" id="trackEditorPartsBtns">
+            <button class="selected_part_btn btn" disabled href="#" onclick="rotatePart ( false )">Rotate Left</button>
+            <button class="selected_part_btn btn" disabled href="#" onclick="rotatePart ( true )">Rotate Right</button>
+            <button class="selected_part_btn btn" disabled href="#" onclick="moveToLayer ( 0 )">Move To Layer 1</button>
+            <button class="selected_part_btn btn" disabled href="#" onclick="moveToLayer ( 1 )">Move To Layer 2</button>
+            <button class="selected_part_btn btn" disabled href="#" onclick="deletePart ( function ( data, dataUrl ) { console.error ( data ) ; } )">
+                Delete</button>
+        </div>
+    </div>
+
+
+
+    <div id="trackEditorContainer"></div>
+}

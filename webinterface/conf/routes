@@ -3,49 +3,51 @@
 # ~~~~
 
 # Home page
-GET         /                                 controllers.ApplicationController.index
-GET         /serial/settings                  controllers.ApplicationController.getSerialSettings
-POST        /serial/settings/:settings        controllers.ApplicationController.setSerialSettings(settings: String)
-POST        /powerOff                         controllers.ApplicationController.powerOff
-POST        /startLightSeq                    controllers.ApplicationController.startLightSeq
-GET         /ws                               controllers.ApplicationController.joinRoomWs
+GET         /                                   controllers.ApplicationController.index
+GET         /serial/settings                    controllers.ApplicationController.getSerialSettings
+POST        /serial/settings/:settings          controllers.ApplicationController.setSerialSettings(settings: String)
+POST        /powerOff                           controllers.ApplicationController.powerOff
+POST        /startLightSeq                      controllers.ApplicationController.startLightSeq
+GET         /ws                                 controllers.ApplicationController.joinRoomWs
 
 # Data Stuff
-GET         /data/tab/:tab                    controllers.DataController.mainDataView(tab:String)
-GET         /data/:formType/add               controllers.DataController.displayAddForm(formType:String)
+GET         /data/tab/:tab                      controllers.DataController.mainDataView(tab:String)
+GET         /data/:formType/add                 controllers.DataController.displayAddForm(formType:String)
 
 ## Data Drivers
-POST        /data/drivers/add                 controllers.DataController.addDriver
-GET         /data/drivers/list                controllers.DataController.listDrivers
-GET         /data/drivers/:id/edit            controllers.DataController.displayEditDriver(id: Long)
-POST        /data/drivers/:id/edit            controllers.DataController.editDriver(id: Long)
+POST        /data/drivers/add                   controllers.DataController.addDriver
+GET         /data/drivers/list                  controllers.DataController.listDrivers
+GET         /data/drivers/:id/edit              controllers.DataController.displayEditDriver(id: Long)
+POST        /data/drivers/:id/edit              controllers.DataController.editDriver(id: Long)
 
 ## DATA Cars
-GET         /data/cars/list                   controllers.DataController.listCars
-POST        /data/cars/add                    controllers.DataController.addCar
-GET         /data/cars/:id/edit               controllers.DataController.displayEditCar(id: Long)
-POST        /data/cars/:id/edit               controllers.DataController.editCar(id: Long)
+GET         /data/cars/list                     controllers.DataController.listCars
+POST        /data/cars/add                      controllers.DataController.addCar
+GET         /data/cars/:id/edit                 controllers.DataController.displayEditCar(id: Long)
+POST        /data/cars/:id/edit                 controllers.DataController.editCar(id: Long)
 
 ## DATA Tracks
-GET         /data/tracks/list                 controllers.DataController.listTracks
-POST        /data/tracks/add                  controllers.DataController.addTrack
-GET         /data/tracks/:id/edit             controllers.DataController.displayEditTrack(id: Long)
-POST        /data/tracks/:id/edit             controllers.DataController.editTrack(id: Long)
+GET         /data/tracks/list                   controllers.DataController.listTracks
+POST        /data/tracks/add                    controllers.DataController.addTrack
+GET         /data/tracks/:id/edit               controllers.DataController.displayEditTrack(id: Long)
+POST        /data/tracks/:id/edit               controllers.DataController.editTrack(id: Long)
+GET         /data/tracks/:id/trackEditor        controllers.DataController.displayTrackEditor(id: Long)
+
 
 ## DATA TrackParts
-GET         /data/trackparts/edit             controllers.DataController.displayEditTrackParts()
-POST        /data/trackparts/edit             controllers.DataController.editTrackParts()
+GET         /data/trackparts/edit               controllers.DataController.displayEditTrackParts()
+POST        /data/trackparts/edit               controllers.DataController.editTrackParts()
 
 ## Data iamges
-GET         /data/image/:id                   controllers.DataController.displayImage(id: Long)
+GET         /data/image/:id                     controllers.DataController.displayImage(id: Long)
 
 
 # Javascript routing
-GET         /assets/javascripts/routes        controllers.ApplicationController.jsRoutes
+GET         /assets/javascripts/routes          controllers.ApplicationController.jsRoutes
 
 
 # Map static resources from the /public folder to the /assets URL path
-GET         /assets/*file                     controllers.Assets.at(path="/public", file)
+GET         /assets/*file                       controllers.Assets.at(path="/public", file)
 
 # webjars controller
-GET         /webjars/*file                    controllers.WebJarAssets.at(file)
+GET         /webjars/*file                      controllers.WebJarAssets.at(file)

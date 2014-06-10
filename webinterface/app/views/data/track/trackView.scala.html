@@ -2,7 +2,7 @@
 
 <div class="row">
     <div class="col-md-12">
-        @twbs.buttons.buttonPrimary("button",'class->"dataAddBtn", Symbol("data-formtype") -> "tracks") {
+        @twbs.buttons.buttonPrimary("button", 'class -> "dataAddBtn", Symbol("data-formtype") -> "tracks") {
             @Messages("track.add")
         }
     </div>
@@ -20,9 +20,14 @@
                 <tr>
                     <td>@track.id</td>
                     <td>@track.name</td>
-                    <td>@twbs.buttons.buttonInfo("button", 'class -> "trackEditBtn", Symbol("data-trackid") -> track.id) {
+                    <td>
+                    @twbs.buttons.buttonInfo("button", 'class -> "trackEditBtn", Symbol("data-trackid") -> track.id) {
                         @Messages("edit")
-                    }</td>
+                    }
+                        @twbs.linkbuttons.linkButtonPrimary(routes.DataController.displayTrackEditor(track.id).url) {
+                            @Messages("trackEditor")
+                        }
+                    </td>
                 </tr>
             }
             </tbody>

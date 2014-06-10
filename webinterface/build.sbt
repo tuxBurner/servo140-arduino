@@ -13,7 +13,8 @@ libraryDependencies ++= Seq(
   "com.github.tuxBurner" %% "play-neo4jplugin" % "1.3.5",
   "com.github.tuxBurner" %% "play-twbs3" % "0.1",
   "org.imgscalr" % "imgscalr-lib" % "4.2",
-  "org.scream3r" % "jssc" % "2.8.0"
+  "org.scream3r" % "jssc" % "2.8.0",
+  "com.google.code.gson" % "gson" % "2.2.4"
 )     
 
 resolvers ++= Seq(
