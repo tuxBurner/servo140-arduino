@@ -11,7 +11,7 @@
             }
         </div>
 
-        @twbs.buttons.buttonInfo("button", 'onclick -> "javascript: startWebcam();") {
+        @twbs.buttons.buttonInfo("button", 'onclick -> "javascript: startWebcam(); $(this).hide();") {
             @Messages("webcam.start")
         }
     </div>
