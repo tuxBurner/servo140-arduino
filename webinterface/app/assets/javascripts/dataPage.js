@@ -65,6 +65,9 @@ var loadDdataTab = function (currentTab) {
         case "tracks" :
             url = jsRoutes.controllers.DataController.listTracks();
             break;
+        case "trackParts" :
+            url = jsRoutes.controllers.DataController.displayEditTrackParts();
+            break;
     }
 
     pAjax(url, null, function (data) {

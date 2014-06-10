@@ -15,4 +15,5 @@ public class TypeAliasNames {
 
     public static final String TRACK = "track";
 
+    public static final String TRACK_PARTS = "track_parts";
 }

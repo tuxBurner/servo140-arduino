@@ -3,7 +3,7 @@ package controllers
 import play.api.mvc.{Action, Controller}
 import neo4j.Neo4JServiceProvider
 import org.springframework.data.domain.Sort
-import neo4j.models.{CarType, ImageNeoNode, NeoTrack}
+import neo4j.models.{NeoTrackParts, CarType, ImageNeoNode, NeoTrack}
 import plugins.jsAnnotations.JSRoute
 import scala.collection.JavaConverters._
 import play.api.i18n.Messages
@@ -95,7 +95,7 @@ object DataController extends Controller {
         },
         value => {
           val neoTrack = Neo4JServiceProvider.get().trackRepo.findOne(id);
-          neoTrack .name = value.name
+          neoTrack.name = value.name
           Neo4JServiceProvider.get().trackRepo.save(neoTrack);
           Redirect(routes.DataController.mainDataView("tracks")).flashing(BaseController.FLASH_SUCCESS_KEY -> Messages("track.edit.success", neoTrack.name));
         }
@@ -236,6 +236,48 @@ object DataController extends Controller {
           Redirect(routes.DataController.mainDataView("cars")).flashing(BaseController.FLASH_SUCCESS_KEY -> Messages("car.edit.success", neoCar.name));
         }
       )
+  }
+
+  /**
+   * Action for editing the trackparts
+   * @return
+   */
+  @JSRoute
+  def displayEditTrackParts() = Neo4jTransactionAction {
+    implicit request =>
+      val neoTrackParts = Neo4JServiceProvider.get().trackPartsRepo.findAll();
+      val trackParts = neoTrackParts.asScala.headOption.getOrElse(new NeoTrackParts())
+      val form = Forms.TrackPartsForm.fill(new TrackParts(trackParts.straight,trackParts.dblStraight,trackParts.fourthStraight,trackParts.thirdStraight,trackParts.curve90,trackParts.curve45,trackParts.curve452, trackParts.connectStraight));
+      Ok(views.html.data.trackParts.render(form))
+  }
+
+  /**
+   * Edits the trackparts
+   * @return
+   */
+  def editTrackParts()  = Neo4jTransactionAction {
+    implicit request =>
+      Forms.TrackPartsForm.bindFromRequest.fold(
+        formWithErrors => {
+          Redirect(routes.DataController.mainDataView("trackParts")).flashing(BaseController.FLASH_ERROR_KEY -> "trackParts.edit.error");
+        },
+        value => {
+          val neoTrackParts = Neo4JServiceProvider.get().trackPartsRepo.findAll();
+          val trackParts = neoTrackParts.asScala.headOption.getOrElse(new NeoTrackParts())
+          trackParts.connectStraight = value.connectStraight
+          trackParts.straight = value.straight
+          trackParts.dblStraight = value.dblStraight
+          trackParts.fourthStraight = value.fourthStraight
+          trackParts.thirdStraight = value.thirdStraight
+          trackParts.curve90 = value.curve90
+          trackParts.curve45 = value.curve45
+          trackParts.curve452 = value.curve452
+          Neo4JServiceProvider.get().trackPartsRepo.save(trackParts)
+
+          Redirect(routes.DataController.mainDataView("trackParts")).flashing(BaseController.FLASH_SUCCESS_KEY -> Messages("trackParts.edit.success"));
+        }
+      )
+
   }
 
   /**

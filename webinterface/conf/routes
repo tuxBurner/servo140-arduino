@@ -32,6 +32,10 @@ POST        /data/tracks/add                  controllers.DataController.addTrac
 GET         /data/tracks/:id/edit             controllers.DataController.displayEditTrack(id: Long)
 POST        /data/tracks/:id/edit             controllers.DataController.editTrack(id: Long)
 
+## DATA TrackParts
+GET         /data/trackparts/edit             controllers.DataController.displayEditTrackParts()
+POST        /data/trackparts/edit             controllers.DataController.editTrackParts()
+
 ## Data iamges
 GET         /data/image/:id                   controllers.DataController.displayImage(id: Long)
 

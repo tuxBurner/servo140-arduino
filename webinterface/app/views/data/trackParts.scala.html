@@ -1,0 +1,16 @@
+@(form: Form[TrackParts])
+
+@twbs.formhelper.form(routes.DataController.editTrackParts()) {
+    @twbs.formhelper.inputNumberSpinner(form("connectStraight"), 1, '_showConstraints -> false)
+    @twbs.formhelper.inputNumberSpinner(form("straight"), 1, '_showConstraints -> false)
+    @twbs.formhelper.inputNumberSpinner(form("dblStraight"), 1, '_showConstraints -> false)
+    @twbs.formhelper.inputNumberSpinner(form("thirdStraight"), 1, '_showConstraints -> false)
+    @twbs.formhelper.inputNumberSpinner(form("fourthStraight"), 1, '_showConstraints -> false)
+    @twbs.formhelper.inputNumberSpinner(form("curve90"), 1, '_showConstraints -> false)
+    @twbs.formhelper.inputNumberSpinner(form("curve45"), 1, '_showConstraints -> false)
+    @twbs.formhelper.inputNumberSpinner(form("curve452"), 1, '_showConstraints -> false)
+
+    @twbs.buttons.buttonPrimary("submit") {
+        @Messages("btn.save.changes")
+    }
+}
