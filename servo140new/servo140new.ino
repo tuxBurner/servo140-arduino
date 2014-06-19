@@ -13,7 +13,7 @@ ServoTimer timer2(3);
 
 // start light pins
 const int ledsPin = 4;
-const int numLeds = 4;
+const int numLeds = 8;
 CRGB leds[numLeds];
 // data of the start light
 const int startLightDelayTime = 750;
@@ -92,6 +92,7 @@ void loop()
       powerOn = false;
       for(int index = numOfLights; index >= 0; index--) {
         leds[index] = CRGB::Blue;
+        leds[index+4] = CRGB::Blue;
       }
       FastLED.show();
       delay(500);
@@ -216,6 +217,7 @@ void startLightControl() {
     if(currStartLight <= numOfLights) {
       // turn on the light
       leds[currStartLight] = CRGB::Red;
+      leds[currStartLight+4] = CRGB::Red;
       FastLED.show();
       // reset the clock timer
       lastMillis = millis();
@@ -238,8 +240,9 @@ void startLightControl() {
  * Turns the leds green which marks that the power is on
  */
 void turnPowerLedsOn(CRGB color) {
-  for(int index = numOfLights; index >= 0; index--) {
+  for(int index = 4; index >= 0; index--) {
     leds[index] = color;
+    leds[index+4] = color;
   }
   FastLED.show();
 }
