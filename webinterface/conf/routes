@@ -10,6 +10,9 @@ POST        /powerOff                           controllers.ApplicationControlle
 POST        /startLightSeq                      controllers.ApplicationController.startLightSeq
 GET         /ws                                 controllers.ApplicationController.joinRoomWs
 
+# RACE
+GET         /race/setup                         controllers.RaceController.raceSetup
+
 # Data Stuff
 GET         /data/tab/:tab                      controllers.DataController.mainDataView(tab:String)
 GET         /data/:formType/add                 controllers.DataController.displayAddForm(formType:String)

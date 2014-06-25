@@ -14,7 +14,8 @@ libraryDependencies ++= Seq(
   "com.github.tuxBurner" %% "play-twbs3" % "0.1",
   "org.imgscalr" % "imgscalr-lib" % "4.2",
   "org.scream3r" % "jssc" % "2.8.0",
-  "com.google.code.gson" % "gson" % "2.2.4"
+  "com.google.code.gson" % "gson" % "2.2.4",
+  "org.webjars" % "bootstrap-select" % "1.4.2"
 )     
 
 resolvers ++= Seq(

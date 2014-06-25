@@ -1,0 +1,11 @@
+@(cars: Seq[neo4j.models.NeoCar],driverNr: Int)
+<select class="selected" data-live-search="true">
+    @for(car <- cars) {
+        @if(car.hasPicture == true) {
+            <option value="@car.id" data-content="<img height='24' src='@routes.DataController.displayImage(car.id)' /> @car.name (@car.carType)">@car.name (@car.carType)</option>
+        } else {
+            <option value="@car.id">@car.name</option>
+        }
+
+    }
+</select>

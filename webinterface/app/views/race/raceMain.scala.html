@@ -1,0 +1,13 @@
+@(jsonRaceSettingsData: Html)(implicit request: play.api.mvc.Request[play.api.mvc.AnyContent])
+
+    @scripts = {
+        <script>
+            var raceSettingsData = @jsonRaceSettingsData;
+        </script>
+        <script type='text/javascript' src='@routes.Assets.at("javascripts/racePage.js")'></script>
+    }
+
+@main(Messages("headline"),scripts) {
+
+
+}

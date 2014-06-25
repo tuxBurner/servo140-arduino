@@ -222,6 +222,38 @@ var deletePart = function (callback) {
 
 var exportData = function (callback) {
     if (callback != undefined) {
+
+        stage.setAbsolutePosition({x:0, y:0});
+        var moveToX = 0;
+        var moveToY = 0;
+        var maxX = 0;
+        var maxY = 0;
+        for(var i=0;i <parts.length; i++) {
+            var absPos = parts[i].getAbsolutePosition();
+            if(absPos.x < moveToX) moveToX = absPos.x;
+            if(absPos.y < moveToY) moveToY = absPos.y;
+
+            if(absPos.x > maxX) maxX = absPos.x;
+            if(absPos.y > maxY) maxY = absPos.y;
+        }
+
+
+        moveToX=moveToX*-1+100;
+        moveToY=moveToY*-1+100;
+
+        stage.setHeight(maxY+400);
+        stage.setWidth(maxX+400);
+
+        for(var i=0;i <parts.length; i++) {
+            parts[i].move({x: moveToX, y: moveToY});
+        }
+        layer.setScale({x: 1, y:1});
+
+        layer.draw();
+        stage.draw();
+
+
+
         stage.toDataURL({
             callback: function (dataUrl) {
                 var json = stage.toJSON();
@@ -390,7 +422,6 @@ var addPart = function (partName) {
 
     group.add(highlightrect);
     highlightPart(group);
-    layer.draw();
 
 
     // add the connection points
@@ -461,8 +492,8 @@ var addPart = function (partName) {
                              } */
 
 
-                            this.setX((partPos.x / stage.getScale().y) - (stage.getAbsolutePosition().x / stage.getScale().y));
-                            this.setY((partPos.y / stage.getScale().y) - (stage.getAbsolutePosition().y / stage.getScale().y));
+                            this.setX((partPos.x / layer.getScale().y) - (stage.getAbsolutePosition().x / layer.getScale().y));
+                            this.setY((partPos.y / layer.getScale().y) - (stage.getAbsolutePosition().y / layer.getScale().y));
 
                             // mark the track part ends bounded
                             part.detectionCirles[j].hide();
@@ -482,6 +513,7 @@ var addPart = function (partName) {
     });
 }
 
+
 var stage = new Kinetic.Stage({
     container: 'trackEditorContainer',
     width: window.innerWidth - 350,
@@ -489,8 +521,9 @@ var stage = new Kinetic.Stage({
     draggable: true
 });
 
-var layer = new Kinetic.Layer();
 
+var layer = new Kinetic.Layer();
+//layer.setScale({x: 0.52, y: 0.52});
 // add the layer to the stage
 stage.add(layer);
 
@@ -498,16 +531,16 @@ stage.add(layer);
 var zoom = function (e) {
     e.preventDefault();
     var zoomAmount = e.wheelDeltaY * 0.001;
-    var scale = stage.getScale().y + zoomAmount;
-    stage.setScale({x: scale, y: scale});
+    var scale = layer.getScale().y + zoomAmount;
+    layer.setScale({x: scale, y: scale});
     layer.draw();
 }
 document.addEventListener("mousewheel", zoom, false)
 
 // TODO REMOVE from here :)
-$(function() {
-    $.each(avaibleParts,function(i,obj) {
-        if(obj > 0) {
+$(function () {
+    $.each(avaibleParts, function (i, obj) {
+        if (obj > 0) {
             $('#trackEditorPartsBtns').append('<button class="btn" onclick="addPart(\'' + i + '\');">' + i + '</button>');
         }
     });

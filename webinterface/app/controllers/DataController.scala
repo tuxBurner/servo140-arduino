@@ -1,18 +1,19 @@
 package controllers
 
+import java.io.File
+
 import com.google.gson.Gson
-import play.api.Logger
-import play.api.mvc.{Action, Controller}
 import neo4j.Neo4JServiceProvider
-import org.springframework.data.domain.Sort
-import neo4j.models.{NeoTrackParts, CarType, ImageNeoNode, NeoTrack}
-import play.api.templates.Html
-import plugins.jsAnnotations.JSRoute
-import scala.collection.JavaConverters._
-import play.api.i18n.Messages
+import neo4j.models.{CarType, ImageNeoNode, NeoTrack, NeoTrackParts}
 import org.apache.commons.codec.binary.Base64
 import org.apache.commons.io.FileUtils
-import java.io.File
+import org.springframework.data.domain.Sort
+import play.api.i18n.Messages
+import play.api.mvc.{Action, Controller}
+import play.api.templates.Html
+import plugins.jsAnnotations.JSRoute
+
+import scala.collection.JavaConverters._
 
 /**
  * Created by tuxburner on 5/24/14.
@@ -108,13 +109,13 @@ object DataController extends Controller {
   def displayTrackEditor(id: Long) = Neo4jTransactionAction {
     implicit request =>
       val neoTrack = Neo4JServiceProvider.get().trackRepo.findOne(id)
-      if(neoTrack == null) {
+      if (neoTrack == null) {
         Redirect(routes.DataController.mainDataView("tracks"))
       } else {
         val neoTrackParts = Neo4JServiceProvider.get().trackPartsRepo.findAll().asScala.headOption.getOrElse(new NeoTrackParts);
 
         val trackPartsAsJson = new Html(new StringBuilder(new Gson().toJson(Forms.neoTrackPartsToTrackParts(neoTrackParts))));
-        Ok(views.html.data.track.trackEditor(neoTrack,trackPartsAsJson))
+        Ok(views.html.data.track.trackEditor(neoTrack, trackPartsAsJson))
       }
   }
 
@@ -263,7 +264,7 @@ object DataController extends Controller {
     implicit request =>
       val neoTrackParts = Neo4JServiceProvider.get().trackPartsRepo.findAll();
       val trackParts = neoTrackParts.asScala.headOption.getOrElse(new NeoTrackParts())
-      val form = Forms.TrackPartsForm.fill(new TrackParts(trackParts.straight,trackParts.dblStraight,trackParts.fourthStraight,trackParts.thirdStraight,trackParts.curve90,trackParts.curve45,trackParts.curve452, trackParts.connectStraight));
+      val form = Forms.TrackPartsForm.fill(new TrackParts(trackParts.straight, trackParts.dblStraight, trackParts.fourthStraight, trackParts.thirdStraight, trackParts.curve90, trackParts.curve45, trackParts.curve452, trackParts.connectStraight));
       Ok(views.html.data.trackParts.render(form))
   }
 
@@ -271,7 +272,7 @@ object DataController extends Controller {
    * Edits the trackparts
    * @return
    */
-  def editTrackParts()  = Neo4jTransactionAction {
+  def editTrackParts() = Neo4jTransactionAction {
     implicit request =>
       Forms.TrackPartsForm.bindFromRequest.fold(
         formWithErrors => {

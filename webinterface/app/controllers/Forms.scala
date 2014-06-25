@@ -1,8 +1,15 @@
 package controllers
 
-import neo4j.models.NeoTrackParts
-import play.api.data._
+import com.google.gson.Gson
+import neo4j.Neo4JServiceProvider
+import neo4j.models.{NeoCar, NeoDriver, NeoTrack, NeoTrackParts}
+import org.springframework.data.domain.Sort
 import play.api.data.Forms._
+import play.api.data._
+import play.api.libs.json._
+import play.api.templates.Html
+
+import scala.collection.JavaConverters._
 
 /**
  * Simple mapping for an entity from a form containing name and an imager
@@ -36,6 +43,14 @@ case class Car(carType: String, imageName: ImageName)
  * @param connectStraight
  */
 case class TrackParts(straight: Int, dblStraight: Int, fourthStraight: Int, thirdStraight: Int, curve90: Int, curve45: Int, curve452: Int, connectStraight: Int)
+
+/**
+ * Class which holds all data for the race setup
+ * @param tracks
+ * @param drivers
+ * @param cars
+ */
+case class RaceData(tracks: Seq[NeoTrack], drivers: Seq[NeoDriver], cars: Seq[NeoCar]);
 
 
 object Forms {
@@ -73,7 +88,60 @@ object Forms {
       (TrackParts.apply)(TrackParts.unapply)
   )
 
-  def neoTrackPartsToTrackParts(neoTrackParts: NeoTrackParts): TrackParts  = {
-    TrackParts.apply(neoTrackParts.straight,neoTrackParts.dblStraight,neoTrackParts.fourthStraight,neoTrackParts.thirdStraight,neoTrackParts.curve90,neoTrackParts.curve45,neoTrackParts.curve452,neoTrackParts.connectStraight)
+  def neoTrackPartsToTrackParts(neoTrackParts: NeoTrackParts): TrackParts = {
+    TrackParts.apply(neoTrackParts.straight, neoTrackParts.dblStraight, neoTrackParts.fourthStraight, neoTrackParts.thirdStraight, neoTrackParts.curve90, neoTrackParts.curve45, neoTrackParts.curve452, neoTrackParts.connectStraight)
+  }
+
+  implicit val neoDriverWrites = new Writes[NeoDriver] {
+    def writes(driver: NeoDriver) = Json.obj(
+      "id" -> driver.id.longValue(),
+      "name" -> driver.name,
+      "img" -> driver.hasPicture.booleanValue()
+    )
+  }
+
+  implicit val neoCarWrites = new Writes[NeoCar] {
+    def writes(car: NeoCar) = Json.obj(
+      "id" -> car.id.longValue(),
+      "name" -> car.name,
+      "img" -> car.hasPicture.booleanValue()
+    )
+  }
+
+  implicit val neoTrackWrites = new Writes[NeoTrack] {
+    def writes(track: NeoTrack) = Json.obj(
+      "id" -> track.id.longValue(),
+      "name" -> track.name
+    )
+  }
+
+  implicit val raceDataWriter = new Writes[RaceData] {
+    def writes(raceData: RaceData) = Json.obj(
+      "drivers" -> raceData.drivers,
+      "cars" -> raceData.cars,
+      "tracks" -> raceData.tracks
+    )
+  }
+
+
+  /**
+   * Prepars all the data as json for the race settings panel
+   * @return
+   */
+  def raceData(): RaceData= {
+    val drivers = Neo4JServiceProvider.get().driverRepo.findAll(new Sort("name")).iterator().asScala.toSeq;
+    val cars = Neo4JServiceProvider.get().carRepo.findAll(new Sort("name")).iterator().asScala.toSeq;
+    val tracks = Neo4JServiceProvider.get().trackRepo.findAll(new Sort("name")).iterator().asScala.toSeq;
+
+     RaceData.apply(tracks, drivers, cars)
+  }
+
+  /**
+   * Prepars all the data as json for the race settings panel
+   * @return
+   */
+  def jsonRaceSettings(): Html = {
+    val json = Json.toJson(raceData);
+    new Html(new StringBuilder(json.toString()))
   }
 }

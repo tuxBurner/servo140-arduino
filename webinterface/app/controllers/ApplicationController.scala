@@ -2,7 +2,7 @@ package controllers
 
 import play.api.mvc._
 import plugins.jsAnnotations.{JSRoute, JSRouteScala}
-import serial.{SerialReader, SerialActor}
+import serial.{SerialActor, SerialReader}
 
 
 object ApplicationController extends Controller {
@@ -15,6 +15,7 @@ object ApplicationController extends Controller {
     implicit request =>
       Ok(views.html.index.render((request)))
   }
+
 
   /**
    * Tells over the serial port to get the settings

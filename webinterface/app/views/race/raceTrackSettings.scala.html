@@ -1,0 +1,6 @@
+@(tracks: Seq[neo4j.models.NeoTrack])
+<select class="selected" data-live-search="true">
+    @for(track <- tracks) {
+        <option value="@track.id">@track.name</option>
+    }
+</select>

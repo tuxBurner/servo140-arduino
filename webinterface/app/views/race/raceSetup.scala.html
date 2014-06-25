@@ -1,0 +1,64 @@
+@(raceData: RaceData)(implicit request: play.api.mvc.Request[play.api.mvc.AnyContent])
+
+    @scripts = {
+        <script type='text/javascript' src='@routes.WebJarAssets.at(WebJarAssets.locate("bootstrap-select.min.js"))'></script>
+        <script type='text/javascript' src='@routes.Assets.at("javascripts/raceSetup.js")'></script>
+    }
+
+    @styles = {
+        <link rel="stylesheet" media="screen" href="@routes.WebJarAssets.at(WebJarAssets.locate("bootstrap-select.min.css"))">
+    }
+
+@main(Messages("headline"), scripts, styles) {
+
+    @if(raceData.cars.isEmpty == true || raceData.drivers.isEmpty == true || raceData.tracks.isEmpty) {
+        @twbs.alerts.alertDanger() {
+            <div class="row">
+                @if(raceData.cars.isEmpty) {
+                    <div class="col-md-12">
+                        @Messages("data.cars.none") <a href="@routes.DataController.mainDataView("cars")">@Messages("data.display")</a>
+                    </div>
+                }
+
+                @if(raceData.drivers.isEmpty) {
+                    <div class="col-md-12">
+                        @Messages("data.drivers.none") <a href="@routes.DataController.mainDataView("drivers")">@Messages("data.display")</a>
+                    </div>
+                }
+
+                @if(raceData.tracks.isEmpty) {
+                    <div class="col-md-12">
+                        @Messages("data.tracks.none") <a href="@routes.DataController.mainDataView("tracks")">@Messages("data.display")</a>
+                    </div>
+                }
+            </div>
+        }
+    } else {
+        @twbs.panels.panelInfo(Option.apply(Html.apply(Messages("race.select.mode"))),None) {
+            <label>
+                <input type="radio" name="options" id="option1" checked> Vs
+            </label>
+            <label>
+                <input type="radio" name="options" id="option2"> Vs Time
+            </label>
+            <label>
+                <input type="radio" name="options" id="option3"> Time
+            </label>
+        }
+
+        <div class="row">
+            <div class="col-md-6">
+            @twbs.panels.panelInfo(Option.apply(Html.apply(Messages("race.select.driverA"))),None) {
+                @raceDriverSettings(raceData.drivers, 1)
+                @raceCarSettings(raceData.cars, 1)
+            }
+            </div>
+            <div class="col-md-6">
+            @twbs.panels.panelInfo(Option.apply(Html.apply(Messages("race.select.driverB"))),None) {
+                @raceDriverSettings(raceData.drivers, 2)
+                @raceCarSettings(raceData.cars, 2)
+            }
+            </div>
+        </div>
+    }
+}

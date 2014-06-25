@@ -123,7 +123,7 @@ var websocketMagic = function () {
 /**
  * Tells the backend to get settings from the arduino
  */
-function callBackendForSettings() {
+var callBackendForSettings = function() {
     pAjax(jsRoutes.controllers.ApplicationController.getSerialSettings(), null, function (data) {
     }, function (data) {
     });
