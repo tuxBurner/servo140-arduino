@@ -1,5 +1,6 @@
 package controllers
 
+import play.api.data.Form
 import play.api.mvc.Controller
 
 /**
@@ -12,6 +13,6 @@ object RaceController extends Controller {
    */
   def raceSetup = Neo4jTransactionAction {
     implicit request =>
-      Ok(views.html.race.raceSetup.render(Forms.raceData(),request))
+      Ok(views.html.race.raceSetup.render(Forms.RaceSetupFrom.fill(new RaceSetup("vs",10)),Forms.raceData(),request))
   }
 }

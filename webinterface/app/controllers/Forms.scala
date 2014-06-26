@@ -1,6 +1,5 @@
 package controllers
 
-import com.google.gson.Gson
 import neo4j.Neo4JServiceProvider
 import neo4j.models.{NeoCar, NeoDriver, NeoTrack, NeoTrackParts}
 import org.springframework.data.domain.Sort
@@ -52,6 +51,13 @@ case class TrackParts(straight: Int, dblStraight: Int, fourthStraight: Int, thir
  */
 case class RaceData(tracks: Seq[NeoTrack], drivers: Seq[NeoDriver], cars: Seq[NeoCar]);
 
+/**
+ * Class which holds the data for the race setup
+ * @param rounds
+ * @param raceType
+ */
+case class RaceSetup(raceType: String, rounds: Int);
+
 
 object Forms {
 
@@ -86,6 +92,12 @@ object Forms {
       "curve452" -> number(0),
       "connectStraight" -> number(0))
       (TrackParts.apply)(TrackParts.unapply)
+  )
+
+  val RaceSetupFrom = Form(
+    mapping("raceType" -> nonEmptyText(),
+      "rounds" -> number(1))
+      (RaceSetup.apply)(RaceSetup.unapply)
   )
 
   def neoTrackPartsToTrackParts(neoTrackParts: NeoTrackParts): TrackParts = {
@@ -128,12 +140,12 @@ object Forms {
    * Prepars all the data as json for the race settings panel
    * @return
    */
-  def raceData(): RaceData= {
+  def raceData(): RaceData = {
     val drivers = Neo4JServiceProvider.get().driverRepo.findAll(new Sort("name")).iterator().asScala.toSeq;
     val cars = Neo4JServiceProvider.get().carRepo.findAll(new Sort("name")).iterator().asScala.toSeq;
     val tracks = Neo4JServiceProvider.get().trackRepo.findAll(new Sort("name")).iterator().asScala.toSeq;
 
-     RaceData.apply(tracks, drivers, cars)
+    RaceData.apply(tracks, drivers, cars)
   }
 
   /**
