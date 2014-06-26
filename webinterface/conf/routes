@@ -12,6 +12,7 @@ GET         /ws                                 controllers.ApplicationControlle
 
 # RACE
 GET         /race/setup                         controllers.RaceController.raceSetup
+POST        /race/setup                         controllers.RaceController.submitRaceSetup
 
 # Data Stuff
 GET         /data/tab/:tab                      controllers.DataController.mainDataView(tab:String)

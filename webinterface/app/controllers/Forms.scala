@@ -53,13 +53,14 @@ case class RaceData(tracks: Seq[NeoTrack], drivers: Seq[NeoDriver], cars: Seq[Ne
 
 /**
  * Class which holds the data for the race setup
- * @param rounds
- * @param raceType
  */
-case class RaceSetup(raceType: String, rounds: Int);
+case class RaceSetup(raceType: String, rounds: Int, driver1: Int, car1: Int, driver2: Option[Int], car2: Option[Int]);
+
 
 
 object Forms {
+
+  val raceTypes = Seq("Vs","VsTime","Time")
 
   val imageNameMapping = mapping(
     "name" -> nonEmptyText,
@@ -96,7 +97,12 @@ object Forms {
 
   val RaceSetupFrom = Form(
     mapping("raceType" -> nonEmptyText(),
-      "rounds" -> number(1))
+      "rounds" -> number(1),
+      "driver1" -> number,
+      "car1" -> number,
+      "driver2" -> optional(number),
+      "car2" -> optional(number)
+    )
       (RaceSetup.apply)(RaceSetup.unapply)
   )
 

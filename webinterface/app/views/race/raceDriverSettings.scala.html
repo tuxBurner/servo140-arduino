@@ -1,8 +1,8 @@
 @(form: Form[RaceSetup],drivers: Seq[neo4j.models.NeoDriver],driverNr: Int)
 @twbs.formhelper.bsSelected(form("driver"+driverNr), drivers.map(f => {
-   val content = f.hasPicture.booleanValue() match {
-        case true => "<img height='24' src='"+routes.DataController.displayImage(f.id)+"'/> "+f.name
-        case _ => f.name
+   val img = f.hasPicture.booleanValue() match {
+        case true => "<img height='24' src='"+routes.DataController.displayImage(f.id)+"'/> "
+        case _ => ""
     }
-   (f.id.toString, content) }
-  ),'class -> "selected", Symbol.apply("data-live-search")-> true)
+   (f.id.toString, img+f.name) }
+  ),'class -> "selected", Symbol.apply("data-live-search")-> true,'_showConstraints -> false)
