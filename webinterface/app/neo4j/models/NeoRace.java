@@ -21,6 +21,8 @@ public class NeoRace extends AbstractNeoNode {
 
     Boolean raceFinished;
 
+    Integer laps;
+
 
     @Fetch
     @RelatedTo(type = RelationNames.RACE_TO_TRACK)
@@ -28,6 +30,5 @@ public class NeoRace extends AbstractNeoNode {
 
     @Fetch
     @RelatedTo(type = RelationNames.RACE_DRIVER_CAR)
-    List<RaceDriverCar> raceDriverCar1;
-
+    List<NeoRaceDriverCar> raceDriverCars;
 }
