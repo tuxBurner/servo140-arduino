@@ -1,15 +1,69 @@
-@(id: Long)(implicit request: play.api.mvc.Request[play.api.mvc.AnyContent])
+@(id: Long, race: neo4j.models.NeoRace)(implicit request: play.api.mvc.Request[play.api.mvc.AnyContent])
 
     @scripts = {
+        <script type='text/javascript' src='@routes.Assets.at("javascripts/steelseries.js")'></script>
+        <script type='text/javascript' src='@routes.Assets.at("javascripts/tween.js")'></script>
         <script type='text/javascript' src='@routes.RaceController.raceViewJsonConfig(id)'></script>
+        <script type='text/javascript' src='@routes.Assets.at("javascripts/communication.js")'></script>
+        <script type='text/javascript' src='@routes.Assets.at("javascripts/controlls/powerLight.js")'></script>
+        <script type='text/javascript' src='@routes.Assets.at("javascripts/controlls/startLights.js")'></script>
+        <script type='text/javascript' src='@routes.Assets.at("javascripts/controlls/raceCars.js")'></script>
         <script type='text/javascript' src='@routes.Assets.at("javascripts/racePage.js")'></script>
+
     }
 
     @main(Messages("headline"), scripts) {
 
-      <div class="row">
-        <div class="col-md-6"></div>
-        <div class="col-md-6"></div>
-      </div>
+        <div class="row">
+            <div class="col-md-4 bg-warning">
+                <div class="row">
+                    <div class="col-md-3">
+                        <canvas id="startLight1Canvas" width="39" height="39" class="center-block"/>
+                    </div>
+                    <div class="col-md-3">
+                        <canvas id="startLight2Canvas" width="39" height="39" class="center-block"/>
+                    </div>
+                    <div class="col-md-3">
+                        <canvas id="startLight3Canvas" width="39" height="39" class="center-block"/>
+                    </div>
+                    <div class="col-md-3">
+                        <canvas id="startLight4Canvas" width="39" height="39" class="center-block"/>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 bg-primary">
+                <h4>
+                    Lap:
+                    <span id="raceCurrentLap" class="label label-default">0</span>
+                    of
+                    <span class="label label-default">@race.laps</span>
+                </h4>
+            </div>
+
+            <div class="col-md-4 bg-danger">
+                <div class="row">
+                    <div class="col-md-4">
+                        <canvas id="powerLightCanvas" width="39" height="39" class="center-block"/>
+                    </div>
+                    <div class="col-md-4">
+                        <button id="raceLightBtn" class="btn btn-warning center-block">StartLight</button>
+                    </div>
+                    <div class="col-md-4">
+                        <button id="racePowerOffBtn" class="btn btn-danger center-block">PowerOff</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <hr />
+
+        <div class="row">
+            <div class="col-md-6">
+            @views.html.race.raceViewCarDriver(1, race.raceDriverCar1)
+            </div>
+            <div class="col-md-6">
+            @views.html.race.raceViewCarDriver(2, race.raceDriverCar2)
+            </div>
+        </div>
 
     }

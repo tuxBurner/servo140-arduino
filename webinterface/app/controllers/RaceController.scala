@@ -94,7 +94,7 @@ object RaceController extends Controller {
       if (race == null) {
         BadRequest("Race not found");
       } else {
-        Ok(views.html.race.raceMain.render(id,request))
+        Ok(views.html.race.raceMain.render(id,race,request))
       }
   }
 

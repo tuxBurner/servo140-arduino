@@ -1,0 +1,57 @@
+@(id: Int, driverCar: neo4j.models.NeoRaceDriverCar)
+
+    @headline = {
+    @driverCar.driver.name / @driverCar.car.name (@driverCar.car.carType.name)
+    }
+
+<div class="row">
+    <div class="col-md-12">
+    @twbs.panels.panelPrimary(Option.apply(headline), None) {
+
+        <div class="row">
+            <div class="col-md-6">
+            </div>
+            <div class="col-md-4">
+                Speed
+            </div>
+            <div class="col-md-2">
+                Steering
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                @if(driverCar.driver.hasPicture == true) {
+                    <img height="75" src="@routes.DataController.displayImage(driverCar.driver.id)" />
+                }
+                @if(driverCar.car.hasPicture == true) {
+                    <img height="75" src="@routes.DataController.displayImage(driverCar.car.id)" />
+                }
+            </div>
+            <div class="col-md-4">
+                <div class="progress">
+                    <div id="car_speedLow_@id" class="progress-bar progress-bar-danger" style="width : 0 %"></div>
+                    <div id="car_speedMid_@id" class="progress-bar progress-bar-warning" style="width : 0 %"></div>
+                    <div id="car_speedHigh_@id" class="progress-bar progress-bar-success" style="width : 0 %"></div>
+                </div>
+                <label id="car_speedLbl_@id"></label>
+            </div>
+            <div class="col-md-2">
+                <div id="car_steerLeft_@id" class="btn btn-danger btn-xs">
+                    <span class="glyphicon glyphicon-chevron-left"></span>
+                </div>
+                <div id="car_steerRight_@id" class="btn btn-success btn-xs">
+                    <span class="glyphicon glyphicon-chevron-right"></span>
+                </div>
+            </div>
+        </div>
+    }
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+    @twbs.panels.panelSuccess(Option.apply(Html.apply(Messages("laptimes"))),None) {
+
+    }
+    </div>
+</div>

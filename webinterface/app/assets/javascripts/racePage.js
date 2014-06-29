@@ -1,21 +1,34 @@
-/**
- * Handles all the race magic stuff
- */
+$(function () {
 
-var raceSetting = null;
+    var powerControll = powerLight();
+    powerControll.setup();
 
-/**
- * Opens the race settings dialo where the race mode is set and the drivers and cars and track is selected
- */
-var displayRaceSettingsDialog = function() {
-    $(raceSettingsData.drivers).each(function(i,obj) {
-        $('#test').append('<option value="'+obj.id+'" data-content="<img height=\'24\' src=\'/data/image/'+obj.id+'\' /> '+obj.name+'">'+obj.name+'</option>')
+    var lightsControll = startLights();
+    lightsControll.setup();
+
+    var raceCarsControll = raceCars();
+
+    var com = communications();
+    com.setupGui(function () {
+
     });
 
-    $('#test').selectpicker();
-    $('#raceSettingsModal').modal('show');
-}
+    com.setPowerControll(powerControll.onData);
+    com.setLightControll(lightsControll.onData);
+    com.setUpdateCarControlls(raceCarsControll.onData);
+    com.start();
 
-$(function() {
-  displayRaceSettingsDialog();
+
+    if (powerControll.currentPowerState == 1) {
+        com.powerOff();
+    }
+
+    $('#racePowerOffBtn').click(function () {
+        com.powerOff();
+    });
+
+    $('#raceLightBtn').click(function () {
+        com.startLightSeq();
+    });
+
 });

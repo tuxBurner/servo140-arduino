@@ -41,7 +41,7 @@ $(function () {
 
     });
 
-    websocketMagic();
+   // websocketMagic();
 });
 
 /**
