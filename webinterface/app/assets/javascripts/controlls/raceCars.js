@@ -116,12 +116,26 @@ var raceCars = (function (totalLaps) {
 
             // car finished round
             if (_driverLaps[carNr - 1] >= 1) {
+
+                // fastest lap ?
+                if(_driverFastestLap[carNr -1] == null || _driverFastestLap[carNr -1] > lapTime) {
+                    _driverFastestLap[carNr -1] = lapTime;
+                    $('#driverLapFastest_'+carNr).text(formatedTime)
+                }
+
+                _driverLapTimes[carNr-1][_driverLaps[carNr - 1] -1] = lapTime;
+
                 $('#driverLap_' + carNr + '' + _driverLaps[carNr - 1]).text(formatedTime);
 
                 // check if we have to update the current lap
                 if (_currentLap < _driverLaps[carNr - 1]) {
                     _currentLap = _driverLaps[carNr - 1];
                     $('#raceCurrentLap').text(_currentLap);
+
+                    if(_currentLap == totalLaps) {
+                        alert('Driver: '+carNr+" finished Race");
+                        console.error(_driverLapTimes)
+                    }
                 }
             }
             _driverLaps[carNr - 1]++;
