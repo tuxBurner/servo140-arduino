@@ -1,8 +1,14 @@
-var raceCars = (function () {
+var raceCars = (function (totalLaps) {
 
     var _speedToPercentage = (100 / 255),
-        _currentSpeed = new Array(2),
-        _currentSteer = new Array(2);
+        _currentSpeed = [0, 0],
+        _currentSteer = [1, 1],
+        _totalLaps = totalLaps,
+        _driverLapTimes = [new Array(totalLaps), new Array(totalLaps)],
+        _driverLaps = [0, 0],
+        _driverFastestLap = [null, null],
+        _currentLap = 0;
+
 
     /**
      * Is called when data for a car is avaible
@@ -14,6 +20,7 @@ var raceCars = (function () {
     var _onData = function (carNr, data, lapData) {
         _updateSpeed(carNr, data[0]);
         _updateSteering(carNr, data[1]);
+        _updateLaptime(carNr, lapData);
     }
 
     /**
@@ -42,11 +49,10 @@ var raceCars = (function () {
      * @private
      */
     var _updateSpeed = function (carNr, speed) {
+        if (_currentSpeed[carNr - 1] != speed) {
+            _currentSpeed[carNr - 1] = speed;
 
-        if (_currentSpeed[carNr] != speed) {
-            _currentSpeed[carNr] = speed;
-
-            $('#car_speedLbl_' + carNr).html(speed);
+            $('#car_speedLbl_' + carNr).text(speed);
 
             if (speed == 0) {
                 $('#car_speedLow_' + carNr).css('width', '0%');
@@ -79,8 +85,47 @@ var raceCars = (function () {
                 return;
             }
         }
+    }
+
+    /**
+     * Updates the lapTime
+     * @param carNr
+     * @param lapData
+     * @private
+     */
+    var _updateLaptime = function (carNr, lapData) {
+
+        // race didnt start and the car did not started its first lap
+        if (_driverLaps[carNr - 1] == 0 && lapData[1] != 1) {
+            return;
+        }
+
+        // the current readed lap time
+        var lapTime = Number(lapData[0]);
+        var formatedTime = lapTime / 1000;
 
 
+        if (_driverLaps[carNr] != 0) {
+            $('#driverLapTime_' + carNr).text(formatedTime);
+        }
+
+
+        // car hit the laptimer
+        if (lapData[1] == 1) {
+            $('#driverLap_' + carNr).text(_driverLaps[carNr - 1]+1);
+
+            // car finished round
+            if (_driverLaps[carNr - 1] >= 1) {
+                $('#driverLap_' + carNr + '' + _driverLaps[carNr - 1]).text(formatedTime);
+
+                // check if we have to update the current lap
+                if (_currentLap < _driverLaps[carNr - 1]) {
+                    _currentLap = _driverLaps[carNr - 1];
+                    $('#raceCurrentLap').text(_currentLap);
+                }
+            }
+            _driverLaps[carNr - 1]++;
+        }
     }
 
     return {

@@ -1,4 +1,4 @@
-@(id: Int, driverCar: neo4j.models.NeoRaceDriverCar)
+@(id: Int, driverCar: neo4j.models.NeoRaceDriverCar, laps: Int)
 
     @headline = {
     @driverCar.driver.name / @driverCar.car.name (@driverCar.car.carType.name)
@@ -10,16 +10,6 @@
 
         <div class="row">
             <div class="col-md-6">
-            </div>
-            <div class="col-md-4">
-                Speed
-            </div>
-            <div class="col-md-2">
-                Steering
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-6">
                 @if(driverCar.driver.hasPicture == true) {
                     <img height="75" src="@routes.DataController.displayImage(driverCar.driver.id)" />
                 }
@@ -27,21 +17,34 @@
                     <img height="75" src="@routes.DataController.displayImage(driverCar.car.id)" />
                 }
             </div>
-            <div class="col-md-4">
-                <div class="progress">
-                    <div id="car_speedLow_@id" class="progress-bar progress-bar-danger" style="width : 0 %"></div>
-                    <div id="car_speedMid_@id" class="progress-bar progress-bar-warning" style="width : 0 %"></div>
-                    <div id="car_speedHigh_@id" class="progress-bar progress-bar-success" style="width : 0 %"></div>
-                    <label id="car_speedLbl_@id"></label>
+            <div class="col-md-6">
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="progress">
+                            <div id="car_speedLow_@id" class="progress-bar progress-bar-danger" style="width : 0 %"></div>
+                            <div id="car_speedMid_@id" class="progress-bar progress-bar-warning" style="width : 0 %"></div>
+                            <div id="car_speedHigh_@id" class="progress-bar progress-bar-success" style="width : 0 %"></div>
+                            <label id="car_speedLbl_@id"></label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div id="car_steerLeft_@id" class="btn btn-danger btn-xs">
+                            <span class="glyphicon glyphicon-chevron-left"></span>
+                        </div>
+                        <div id="car_steerRight_@id" class="btn btn-success btn-xs">
+                            <span class="glyphicon glyphicon-chevron-right"></span>
+                        </div>
+                    </div>
                 </div>
-
-            </div>
-            <div class="col-md-2">
-                <div id="car_steerLeft_@id" class="btn btn-danger btn-xs">
-                    <span class="glyphicon glyphicon-chevron-left"></span>
+                <div class="row">
+                    <div class="col-md-2">Lap</div>
+                    <div class="col-md-5">LapTime</div>
+                    <div class="col-md-5">Fastest</div>
                 </div>
-                <div id="car_steerRight_@id" class="btn btn-success btn-xs">
-                    <span class="glyphicon glyphicon-chevron-right"></span>
+                <div class="row">
+                    <div id="driverLap_@id" class="col-md-2">0</div>
+                    <div id="driverLapTime_@id" class="col-md-5">0.00</div>
+                    <div id="driverLapFastest_@id" class="col-md-5">0.00</div>
                 </div>
             </div>
         </div>
@@ -51,8 +54,23 @@
 
 <div class="row">
     <div class="col-md-12">
-    @twbs.panels.panelSuccess(Option.apply(Html.apply(Messages("laptimes"))),None) {
-
+    @twbs.panels.panelSuccess(Option.apply(Html.apply(Messages("laptimes"))), None) {
+      <table class="table">
+          <thead>
+              <tr>
+                  <th>LapNr</th>
+                  <th>Time</th>
+              </tr>
+          </thead>
+          <tbody>
+              @for(idx <- 1 to laps) {
+                  <tr>
+                      <td>@idx</td>
+                      <td id="driverLap_@id@idx"></td>
+                  </tr>
+              }
+          </tbody>
+      </table>
     }
     </div>
 </div>

@@ -6,7 +6,7 @@ $(function () {
     var lightsControll = startLights();
     lightsControll.setup();
 
-    var raceCarsControll = raceCars();
+    var raceCarsControll = raceCars(jsonRace.laps);
 
     var com = communications();
     com.setupGui(function () {
