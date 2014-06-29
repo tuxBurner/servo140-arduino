@@ -17,8 +17,8 @@ var startLights = (function () {
      */
     var _setup = function () {
 
-        _beepSound = new Audio('assets/sounds/beep.wav');
-        _goSound = new Audio('assets/sounds/go.wav');
+        _beepSound = new Audio('/assets/sounds/beep.wav');
+        _goSound = new Audio('/assets/sounds/go.wav');
 
         // startlight
         _startLight1 = new steelseries.Led('startLight1Canvas');

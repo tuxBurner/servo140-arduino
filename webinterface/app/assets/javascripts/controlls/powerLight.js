@@ -12,7 +12,7 @@ var powerLight = (function () {
      * @private
      */
     var _setup = function () {
-        _powerOffSound = new Audio('assets/sounds/powerOff.wav');
+        _powerOffSound = new Audio('/assets/sounds/powerOff.wav');
         _powerLight = new steelseries.Led('powerLightCanvas', {
             width: 200,
             height: 200

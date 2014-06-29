@@ -3,8 +3,6 @@
  * @type {Function}
  */
 var communications = (function () {
-
-
     /**
      * Settings from the backend for the cars
      * @type {null}
