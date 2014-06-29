@@ -1,0 +1,45 @@
+@(races: Seq[neo4j.models.NeoRace])(implicit request: play.api.mvc.Request[play.api.mvc.AnyContent])
+
+@main(Messages("headline")) {
+    @if(races.isEmpty == true) {
+        @twbs.alerts.alertDanger() {
+            @Messages("races.unfinished.empty")
+        }
+    } else {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>type</th>
+                    <th>laps</th>
+                    <th>driver1</th>
+                    <th>driver2</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+            @for(race <- races) {
+                <tr>
+                    <td>@race.id</td>
+                    <td>@race.raceType.name</td>
+                    <td>@race.laps</td>
+                    <td>
+                        @views.html.race.raceCarDriver(race.raceDriverCar1)
+                    </td>
+                    <td>
+                    @if(race.raceDriverCar2 != null) {
+                        @views.html.race.raceCarDriver(race.raceDriverCar2)
+                    }
+                    </td>
+                    <td>
+                        @twbs.linkbuttons.linkButtonPrimary(routes.RaceController.raceView(race.id).url) {@Messages("start")}
+                        @twbs.linkbuttons.linkButtonDanger(routes.RaceController.deleteRace(race.id).url) {@Messages("delete")}
+                    </td>
+                </tr>
+            }
+            </tbody>
+
+        </table>
+    }
+
+}

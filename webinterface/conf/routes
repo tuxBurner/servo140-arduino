@@ -13,6 +13,12 @@ GET         /ws                                 controllers.ApplicationControlle
 # RACE
 GET         /race/setup                         controllers.RaceController.raceSetup
 POST        /race/setup                         controllers.RaceController.submitRaceSetup
+GET         /race/:id                           controllers.RaceController.raceView(id: Long)
+GET         /race/:id/json                      controllers.RaceController.raceViewJsonConfig(id: Long)
+GET         /race/:id/delete                    controllers.RaceController.deleteRace(id: Long)
+
+GET         /races/unfinished                   controllers.RaceController.unfinishedRaces
+
 
 # Data Stuff
 GET         /data/tab/:tab                      controllers.DataController.mainDataView(tab:String)

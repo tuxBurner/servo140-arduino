@@ -1,0 +1,14 @@
+@(driverCar: neo4j.models.NeoRaceDriverCar)
+<label>
+    @if(driverCar.driver.hasPicture == true) {
+        <img src="@routes.DataController.displayImage(driverCar.driver.id)" width="35" height="35" />
+    }
+    @driverCar.driver.name
+</label>
+
+<label>
+    @if(driverCar.car.hasPicture == true) {
+        <img src="@routes.DataController.displayImage(driverCar.car.id)" width="35" height="35" />
+    }
+    @driverCar.car.name (@driverCar.car.carType.name)
+</label>

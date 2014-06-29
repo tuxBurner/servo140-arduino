@@ -9,7 +9,7 @@ import org.springframework.data.neo4j.annotation.NodeEntity;
  */
 @NodeEntity
 @TypeAlias(value = TypeAliasNames.RACE_LAP)
-public class NeoRaceLap {
+public class NeoRaceLap extends AbstractNeoNode {
 
     Integer lapNr;
 

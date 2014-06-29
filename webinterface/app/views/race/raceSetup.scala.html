@@ -40,7 +40,7 @@
 
                     @twbs.formhelper.inputRadioGroup(form("raceType"), controllers.Forms.raceTypes.map(f => (f, f)))
 
-                    @twbs.formhelper.inputNumberSpinner(form("rounds"), 1, '_showConstraints -> false)
+                    @twbs.formhelper.inputNumberSpinner(form("laps"), 1, '_showConstraints -> false)
 
                     @views.html.race.raceTrackSettings(form, raceData.tracks)
                 }

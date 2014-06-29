@@ -26,5 +26,5 @@ public class NeoRaceDriverCar extends AbstractNeoNode {
 
     @Fetch
     @RelatedTo(type = RelationNames.RACE_LAPS)
-    List<NeoRaceLap> laps;
+    public List<NeoRaceLap> laps;
 }

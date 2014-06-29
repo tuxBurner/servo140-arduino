@@ -1,13 +1,15 @@
-@(jsonRaceSettingsData: Html)(implicit request: play.api.mvc.Request[play.api.mvc.AnyContent])
+@(id: Long)(implicit request: play.api.mvc.Request[play.api.mvc.AnyContent])
 
     @scripts = {
-        <script>
-            var raceSettingsData = @jsonRaceSettingsData;
-        </script>
+        <script type='text/javascript' src='@routes.RaceController.raceViewJsonConfig(id)'></script>
         <script type='text/javascript' src='@routes.Assets.at("javascripts/racePage.js")'></script>
     }
 
-@main(Messages("headline"),scripts) {
+    @main(Messages("headline"), scripts) {
 
+      <div class="row">
+        <div class="col-md-6"></div>
+        <div class="col-md-6"></div>
+      </div>
 
-}
+    }

@@ -11,7 +11,9 @@ public class RelationNames {
 
     public static final String RACE_CAR = "RACE_CAR";
 
-    public static final String RACE_DRIVER_CAR = "RACE_DRIVER_CAR";
+    public static final String RACE_DRIVER_CAR1 = "RACE_DRIVER_CAR1";
+
+    public static final String RACE_DRIVER_CAR2 = "RACE_DRIVER_CAR2";
 
     public static final String RACE_LAPS = "DRIVER_CAR_LAPS";
 }

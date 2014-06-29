@@ -1,7 +1,7 @@
 package controllers
 
 import neo4j.Neo4JServiceProvider
-import neo4j.models.{NeoCar, NeoDriver, NeoTrack, NeoTrackParts}
+import neo4j.models._
 import org.springframework.data.domain.Sort
 import play.api.data.Forms._
 import play.api.data._
@@ -54,13 +54,12 @@ case class RaceData(tracks: Seq[NeoTrack], drivers: Seq[NeoDriver], cars: Seq[Ne
 /**
  * Class which holds the data for the race setup
  */
-case class RaceSetup(raceType: String, rounds: Int, driver1: Int, car1: Int, driver2: Option[Int], car2: Option[Int]);
-
+case class RaceSetup(raceType: String, laps: Int, track: Int, driver1: Int, car1: Int, driver2: Option[Int], car2: Option[Int]);
 
 
 object Forms {
 
-  val raceTypes = Seq("Vs","VsTime","Time")
+  val raceTypes = ERaceType.values().map(f => f.name());
 
   val imageNameMapping = mapping(
     "name" -> nonEmptyText,
@@ -97,7 +96,8 @@ object Forms {
 
   val RaceSetupFrom = Form(
     mapping("raceType" -> nonEmptyText(),
-      "rounds" -> number(1),
+      "laps" -> number(1),
+      "track" -> number,
       "driver1" -> number,
       "car1" -> number,
       "driver2" -> optional(number),
@@ -114,7 +114,7 @@ object Forms {
     def writes(driver: NeoDriver) = Json.obj(
       "id" -> driver.id.longValue(),
       "name" -> driver.name,
-      "img" -> driver.hasPicture.booleanValue()
+      "hasImg" -> driver.hasPicture.booleanValue()
     )
   }
 
@@ -122,22 +122,25 @@ object Forms {
     def writes(car: NeoCar) = Json.obj(
       "id" -> car.id.longValue(),
       "name" -> car.name,
-      "img" -> car.hasPicture.booleanValue()
+      "type" -> car.carType.name,
+      "hasImg" -> car.hasPicture.booleanValue()
     )
   }
 
-  implicit val neoTrackWrites = new Writes[NeoTrack] {
-    def writes(track: NeoTrack) = Json.obj(
-      "id" -> track.id.longValue(),
-      "name" -> track.name
+  implicit val neoRaceDriverCarWriter = new Writes[NeoRaceDriverCar] {
+    def writes(raceDriverCar: NeoRaceDriverCar) = Json.obj(
+      "car" -> raceDriverCar.car,
+      "driver" -> raceDriverCar.driver
     )
   }
 
-  implicit val raceDataWriter = new Writes[RaceData] {
-    def writes(raceData: RaceData) = Json.obj(
-      "drivers" -> raceData.drivers,
-      "cars" -> raceData.cars,
-      "tracks" -> raceData.tracks
+  implicit val neoRaceDataWriter = new Writes[NeoRace] {
+    def writes(race: NeoRace) = Json.obj(
+      "id" -> race.id.longValue(),
+      "type" -> race.raceType.name(),
+      "laps" -> race.laps.intValue(),
+      "trackName" -> race.track.name,
+      "driverCar1" -> race.raceDriverCar1
     )
   }
 
@@ -158,8 +161,8 @@ object Forms {
    * Prepars all the data as json for the race settings panel
    * @return
    */
-  def jsonRaceSettings(): Html = {
-    val json = Json.toJson(raceData);
-    new Html(new StringBuilder(json.toString()))
+  def raceAsJson(race: NeoRace): Html = {
+    val json = Json.toJson(race)
+    Html.apply(json.toString())
   }
 }
