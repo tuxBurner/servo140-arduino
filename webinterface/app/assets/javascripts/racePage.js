@@ -8,9 +8,11 @@ $(function () {
 
     var raceCarsControll = raceCars(jsonRace.laps);
 
-    var com = communications();
-    com.setupGui(function () {
+    var settingsModals = settingsModal();
 
+    var com = communications();
+    com.setupGui(function (carSettings) {
+        settingsModals.setSettings(carSettings);
     });
 
     com.setPowerControll(powerControll.onData);

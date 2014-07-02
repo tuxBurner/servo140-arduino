@@ -1,6 +1,9 @@
 @(races: Seq[neo4j.models.NeoRace])(implicit request: play.api.mvc.Request[play.api.mvc.AnyContent])
 
 @main(Messages("headline")) {
+
+    @twbs.pageHeader(Html.apply(Messages("races.unfinished")))
+
     @if(races.isEmpty == true) {
         @twbs.alerts.alertDanger() {
             @Messages("races.unfinished.empty")
