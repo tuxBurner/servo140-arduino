@@ -15,9 +15,10 @@ var communications = (function () {
     var _controllReady = false;
     /**
      * Is called after the settings are parsed
+     * @param carSettings
      * @private
      */
-    var _setupGui = function () {
+    var _setupGui = function (carSettings) {
         alert("override me with com.setupGui = function() {};")
     };
 
@@ -27,7 +28,6 @@ var communications = (function () {
      * @private
      */
     var _lightControll = function (lightNr) {
-        console.error(lightNr);
     };
 
     /**
@@ -139,7 +139,7 @@ var communications = (function () {
         }
 
         // setup the gui
-        _setupGui();
+        _setupGui(_carSettings);
     }
 
     /**
@@ -162,7 +162,7 @@ var communications = (function () {
         startLightSeq: _startLightSeq,
         setupGui: function (func) {
             _setupGui = function () {
-                func();
+                func(_carSettings);
                 _controllReady = true;
             }
         },
@@ -174,7 +174,8 @@ var communications = (function () {
         },
         setUpdateCarControlls: function (func) {
             _updateCarControlls = func;
-        }
+        },
+        getCarSettings: function() { return _carSettings }
     }
 
 

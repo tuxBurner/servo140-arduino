@@ -132,7 +132,7 @@ var raceCars = (function (totalLaps) {
                     _currentLap = _driverLaps[carNr - 1];
                     $('#raceCurrentLap').text(_currentLap);
 
-                    if(_currentLap == totalLaps) {
+                    if(_currentLap == _totalLaps) {
                         alert('Driver: '+carNr+" finished Race");
                         console.error(_driverLapTimes)
                     }
