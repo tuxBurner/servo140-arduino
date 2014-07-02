@@ -8,7 +8,7 @@
         <script type='text/javascript' src='@routes.Assets.at("javascripts/trackeditor.js")'></script>
     }
 
-@main(Messages("trackEditor"), scripts) {
+@main(Messages("trackEditor"),ENavpoint.DATA, scripts) {
     <div class="row">
         <div class="col-md-12" id="trackEditorPartsBtns">
             <button href="#" onclick="exportData ( function ( data,dataUrl) { console.error ( dataUrl) ; } )">Export</button>
